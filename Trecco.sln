@@ -1,0 +1,84 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35208.52
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{1F81BD05-46BA-4053-A716-107129364218}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{73C7F6B0-3C0F-4529-B8A3-EF806F809F78}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Trecco.Api", "src\Trecco.Api\Trecco.Api.csproj", "{0654141D-9B26-4AF0-941A-C9BE067073B1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Trecco.UnitTests", "tests\Trecco.UnitTests\Trecco.UnitTests.csproj", "{64CB5EDD-D8AC-4A3C-9426-861859930F87}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A35F24D5-9B53-4093-97ED-FC4BCE664649}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		.gitignore = .gitignore
+		Directory.Build.props = Directory.Build.props
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "aspire", "aspire", "{A27EF577-3458-46B0-91A9-4CF8F78F3121}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Trecco.Aspire.AppHost", "aspire\Trecco.Aspire\Trecco.Aspire.AppHost\Trecco.Aspire.AppHost.csproj", "{2998F394-EED0-4AD9-91F6-8FEFFE6C7018}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Trecco.Aspire.ServiceDefaults", "aspire\Trecco.Aspire\Trecco.Aspire.ServiceDefaults\Trecco.Aspire.ServiceDefaults.csproj", "{BDBB162F-3DB4-4F3F-B5BA-FD0B7328C05A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Trecco.IntegrationTests", "tests\Trecco.IntegrationTests\Trecco.IntegrationTests.csproj", "{6B4FC2F9-218B-4A20-849B-3B3D7EA8E44A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Trecco.Application", "src\Trecco.Application\Trecco.Application.csproj", "{AB959874-52EC-48E5-A1C1-6EC6D6AAC35E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Trecco.ArchitectureTests", "tests\Trecco.ArchitectureTests\Trecco.ArchitectureTests.csproj", "{3F172012-3475-5B62-A273-A35D2D61E20A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0654141D-9B26-4AF0-941A-C9BE067073B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0654141D-9B26-4AF0-941A-C9BE067073B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0654141D-9B26-4AF0-941A-C9BE067073B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0654141D-9B26-4AF0-941A-C9BE067073B1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{64CB5EDD-D8AC-4A3C-9426-861859930F87}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{64CB5EDD-D8AC-4A3C-9426-861859930F87}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{64CB5EDD-D8AC-4A3C-9426-861859930F87}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{64CB5EDD-D8AC-4A3C-9426-861859930F87}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2998F394-EED0-4AD9-91F6-8FEFFE6C7018}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2998F394-EED0-4AD9-91F6-8FEFFE6C7018}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2998F394-EED0-4AD9-91F6-8FEFFE6C7018}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2998F394-EED0-4AD9-91F6-8FEFFE6C7018}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BDBB162F-3DB4-4F3F-B5BA-FD0B7328C05A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BDBB162F-3DB4-4F3F-B5BA-FD0B7328C05A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BDBB162F-3DB4-4F3F-B5BA-FD0B7328C05A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BDBB162F-3DB4-4F3F-B5BA-FD0B7328C05A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B4FC2F9-218B-4A20-849B-3B3D7EA8E44A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B4FC2F9-218B-4A20-849B-3B3D7EA8E44A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B4FC2F9-218B-4A20-849B-3B3D7EA8E44A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B4FC2F9-218B-4A20-849B-3B3D7EA8E44A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AB959874-52EC-48E5-A1C1-6EC6D6AAC35E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB959874-52EC-48E5-A1C1-6EC6D6AAC35E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB959874-52EC-48E5-A1C1-6EC6D6AAC35E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB959874-52EC-48E5-A1C1-6EC6D6AAC35E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F172012-3475-5B62-A273-A35D2D61E20A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F172012-3475-5B62-A273-A35D2D61E20A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F172012-3475-5B62-A273-A35D2D61E20A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F172012-3475-5B62-A273-A35D2D61E20A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{0654141D-9B26-4AF0-941A-C9BE067073B1} = {1F81BD05-46BA-4053-A716-107129364218}
+		{64CB5EDD-D8AC-4A3C-9426-861859930F87} = {73C7F6B0-3C0F-4529-B8A3-EF806F809F78}
+		{2998F394-EED0-4AD9-91F6-8FEFFE6C7018} = {A27EF577-3458-46B0-91A9-4CF8F78F3121}
+		{BDBB162F-3DB4-4F3F-B5BA-FD0B7328C05A} = {A27EF577-3458-46B0-91A9-4CF8F78F3121}
+		{6B4FC2F9-218B-4A20-849B-3B3D7EA8E44A} = {73C7F6B0-3C0F-4529-B8A3-EF806F809F78}
+		{AB959874-52EC-48E5-A1C1-6EC6D6AAC35E} = {1F81BD05-46BA-4053-A716-107129364218}
+		{3F172012-3475-5B62-A273-A35D2D61E20A} = {73C7F6B0-3C0F-4529-B8A3-EF806F809F78}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FD382CF2-FC23-45BC-8B69-28D7E62F5A4A}
+	EndGlobalSection
+EndGlobal
