@@ -16,7 +16,7 @@ internal sealed class CreateBoardHandler(
             return Result.Failure(BoardErrors.BoardAlreadyExists(request.Name));
         }
 
-        var board = new Board(request.Name);
+        var board = new Board(request.Name, request.OwnerUserId);
 
         await boardRepository.InsertAsync(board, cancellationToken);
 
@@ -24,7 +24,8 @@ internal sealed class CreateBoardHandler(
 
         return new CreateBoardResponse(
             board.Id,
-            board.Name
+            board.Name,
+            board.OwnerUserId
         );
     }
 }

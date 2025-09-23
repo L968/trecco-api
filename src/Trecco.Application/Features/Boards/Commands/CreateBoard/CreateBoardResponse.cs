@@ -2,5 +2,6 @@
 
 public sealed record CreateBoardResponse(
     Guid Id,
-    string Name
+    string Name,
+    Guid OwnerUserId
 );
