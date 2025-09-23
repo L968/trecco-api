@@ -7,5 +7,8 @@ internal sealed class CreateBoardValidator : AbstractValidator<CreateBoardComman
         RuleFor(b => b.Name)
             .NotEmpty()
             .MinimumLength(3);
+
+        RuleFor(b => b.OwnerUserId)
+            .NotEmpty();
     }
 }

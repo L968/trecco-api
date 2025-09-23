@@ -2,6 +2,9 @@
 
 internal static class BoardErrors
 {
-    public static Error BoardAlreadyExists(string boardName) =>
-        Error.Conflict("Board.BoardAlreadyExists", $"A board with name \"{boardName}\" already exists.");
+    public static Error BoardAlreadyExistsForUser(string boardName) =>
+        Error.Conflict(
+            "Board.BoardAlreadyExistsForUser",
+            $"A board with name \"{boardName}\" already exists for this user."
+        );
 }

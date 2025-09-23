@@ -12,8 +12,9 @@ internal sealed class BoardRepository : IBoardRepository
         _boards = database.GetCollection<Board>("Boards");
     }
 
-    public async Task<bool> ExistsByNameAsync(string name, CancellationToken cancellationToken) =>
-        await _boards.Find(b => b.Name == name).AnyAsync(cancellationToken);
+    public async Task<bool> ExistsByNameAsync(string name, Guid ownerUserId, CancellationToken cancellationToken) =>
+        await _boards.Find(b => b.Name == name && b.OwnerUserId == ownerUserId)
+                     .AnyAsync(cancellationToken);
 
     public async Task InsertAsync(Board board, CancellationToken cancellationToken) =>
         await _boards.InsertOneAsync(board, cancellationToken: cancellationToken);
