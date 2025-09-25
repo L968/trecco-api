@@ -18,4 +18,10 @@ internal sealed class BoardRepository : IBoardRepository
 
     public async Task InsertAsync(Board board, CancellationToken cancellationToken) =>
         await _boards.InsertOneAsync(board, cancellationToken: cancellationToken);
+
+    public async Task<Board?> GetByIdAsync(Guid id, CancellationToken cancellationToken) =>
+        await _boards.Find(b => b.Id == id).FirstOrDefaultAsync(cancellationToken);
+
+    public async Task UpdateAsync(Board board, CancellationToken cancellationToken) =>
+        await _boards.ReplaceOneAsync(b => b.Id == board.Id, board, cancellationToken: cancellationToken);
 }
