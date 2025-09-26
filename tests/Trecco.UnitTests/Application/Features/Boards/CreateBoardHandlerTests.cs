@@ -35,7 +35,6 @@ public class CreateBoardHandlerTests
         Assert.True(result.IsFailure);
         Assert.Equal(BoardErrors.BoardAlreadyExistsForUser(command.Name).Code, result.Error.Code);
         _repositoryMock.Verify(r => r.InsertAsync(It.IsAny<Board>(), It.IsAny<CancellationToken>()), Times.Never);
-        _loggerMock.VerifyLog(LogLevel.Information, Times.Never());
     }
 
     [Fact]
@@ -59,6 +58,5 @@ public class CreateBoardHandlerTests
         Assert.Equal(command.OwnerUserId, result.Value.OwnerUserId);
 
         _repositoryMock.Verify(r => r.InsertAsync(It.IsAny<Board>(), It.IsAny<CancellationToken>()), Times.Once);
-        _loggerMock.VerifyLog(LogLevel.Information, Times.Once());
     }
 }

@@ -15,7 +15,7 @@ public sealed class List
     private readonly List<Card> _cards = [];
     public IReadOnlyCollection<Card> Cards => _cards.AsReadOnly();
 
-    public List(string name, int position = 0)
+    public List(string name, int position)
     {
         Id = Guid.CreateVersion7();
         Name = name ?? throw new ArgumentNullException(nameof(name));
@@ -32,10 +32,16 @@ public sealed class List
         Name = newName;
     }
 
-    public void AddCard(string title, string description, Guid createdBy, int position = 0)
+    public Card AddCard(string title, string description)
     {
-        var card = new Card(title, description, createdBy, position);
+        int nextPosition = _cards.Count > 0
+            ? _cards.Max(c => c.Position) + 1
+            : 0;
+
+        var card = new Card(title, description, nextPosition);
         _cards.Add(card);
+
+        return card;
     }
 
     public void RemoveCard(Guid cardId)

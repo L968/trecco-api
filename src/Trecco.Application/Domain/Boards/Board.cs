@@ -42,7 +42,7 @@ public sealed class Board
 
     public void AddMember(Guid userId)
     {
-        if (!MemberIds.Contains(userId))
+        if (!_memberIds.Contains(userId))
         {
             _memberIds.Add(userId);
             UpdatedAt = DateTime.UtcNow;
@@ -59,8 +59,13 @@ public sealed class Board
 
     public List AddList(string listName)
     {
-        var newList = new List(listName);
+        int position = _lists.Count > 0
+            ? _lists.Max(l => l.Position) + 1
+            : 0;
+
+        var newList = new List(listName, position);
         _lists.Add(newList);
+
         UpdatedAt = DateTime.UtcNow;
         return newList;
     }

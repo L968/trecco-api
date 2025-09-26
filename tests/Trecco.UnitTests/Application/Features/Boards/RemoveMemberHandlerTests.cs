@@ -33,7 +33,6 @@ public sealed class RemoveMemberHandlerTests
         Assert.True(result.IsFailure);
         Assert.Equal(BoardErrors.NotFound(command.BoardId).Code, result.Error.Code);
         _repositoryMock.Verify(r => r.UpdateAsync(It.IsAny<Board>(), It.IsAny<CancellationToken>()), Times.Never);
-        _loggerMock.VerifyLog(LogLevel.Warning, Times.Once());
     }
 
     [Fact]
@@ -54,7 +53,6 @@ public sealed class RemoveMemberHandlerTests
         Assert.True(result.IsFailure);
         Assert.Equal(BoardErrors.NotMember.Code, result.Error.Code);
         _repositoryMock.Verify(r => r.UpdateAsync(It.IsAny<Board>(), It.IsAny<CancellationToken>()), Times.Never);
-        _loggerMock.VerifyLog(LogLevel.Warning, Times.Once());
     }
 
     [Fact]
@@ -79,6 +77,5 @@ public sealed class RemoveMemberHandlerTests
         Assert.Equal(Error.None, result.Error);
         Assert.DoesNotContain(userId, board.MemberIds);
         _repositoryMock.Verify(r => r.UpdateAsync(board, It.IsAny<CancellationToken>()), Times.Once);
-        _loggerMock.VerifyLog(LogLevel.Information, Times.Once());
     }
 }

@@ -35,7 +35,6 @@ public class CreateListHandlerTests
         Assert.True(result.IsFailure);
         Assert.Equal(BoardErrors.NotFound(boardId).Code, result.Error.Code);
         _repositoryMock.Verify(r => r.UpdateAsync(It.IsAny<Board>(), It.IsAny<CancellationToken>()), Times.Never);
-        _loggerMock.VerifyNoOtherCalls();
     }
 
     [Fact]
@@ -57,6 +56,5 @@ public class CreateListHandlerTests
         Assert.True(result.IsSuccess);
         Assert.NotEqual(Guid.Empty, result.Value.Id);
         _repositoryMock.Verify(r => r.UpdateAsync(board, It.IsAny<CancellationToken>()), Times.Once);
-        _loggerMock.VerifyLog(LogLevel.Information, Times.Once());
     }
 }

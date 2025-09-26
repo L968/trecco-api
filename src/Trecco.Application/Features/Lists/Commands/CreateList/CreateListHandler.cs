@@ -21,8 +21,8 @@ internal sealed class CreateListHandler(
 
         await boardRepository.UpdateAsync(board, cancellationToken);
 
-        logger.LogInformation("List {ListId} created in Board {BoardId}", list.Id, board.Id);
+        logger.LogDebug("List {ListId} created in Board {BoardId}", list.Id, board.Id);
 
-        return Result.Success(new CreateListResponse(list.Id));
+        return new CreateListResponse(list.Id);
     }
 }

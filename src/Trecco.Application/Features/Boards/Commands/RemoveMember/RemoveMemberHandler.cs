@@ -26,7 +26,7 @@ internal sealed class RemoveMemberHandler(
         board.RemoveMember(request.UserId);
         await boardRepository.UpdateAsync(board, cancellationToken);
 
-        logger.LogInformation("User {UserId} removed from Board {BoardId}", request.UserId, request.BoardId);
+        logger.LogDebug("User {UserId} removed from Board {BoardId}", request.UserId, request.BoardId);
 
         return Result.Success();
     }

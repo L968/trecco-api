@@ -8,8 +8,6 @@ public abstract class ResultBase
     public bool IsFailure => !IsSuccess;
     public Error Error { get; protected set; } = Error.None;
 
-    protected ResultBase() { }
-
     protected ResultBase(bool isSuccess, Error error)
     {
         if (isSuccess && error != Error.None ||
@@ -25,8 +23,6 @@ public abstract class ResultBase
 
 public class Result : ResultBase
 {
-    public Result() { }
-
     public Result(bool isSuccess, Error error) : base(isSuccess, error) { }
 
     public static Result Success() => new(true, Error.None);
@@ -53,8 +49,6 @@ public sealed class Result<TValue> : ResultBase
     {
         _value = value;
     }
-
-    public Result() { }
 
     [NotNull]
     public TValue Value => IsSuccess

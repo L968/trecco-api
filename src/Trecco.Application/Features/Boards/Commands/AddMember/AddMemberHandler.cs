@@ -19,7 +19,7 @@ internal sealed class AddMemberHandler(
 
         if (board.MemberIds.Contains(request.UserId))
         {
-            logger.LogInformation("User {UserId} is already a member of Board {BoardId}", request.UserId, request.BoardId);
+            logger.LogWarning("User {UserId} is already a member of Board {BoardId}", request.UserId, request.BoardId);
             return Result.Failure(BoardErrors.AlreadyMember);
         }
 
@@ -27,7 +27,7 @@ internal sealed class AddMemberHandler(
 
         await boardRepository.UpdateAsync(board, cancellationToken);
 
-        logger.LogInformation("User {UserId} added to Board {BoardId}", request.UserId, request.BoardId);
+        logger.LogDebug("User {UserId} added to Board {BoardId}", request.UserId, request.BoardId);
 
         return Result.Success();
     }

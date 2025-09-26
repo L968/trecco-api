@@ -20,7 +20,7 @@ internal sealed class CreateBoardHandler(
 
         await boardRepository.InsertAsync(board, cancellationToken);
 
-        logger.LogInformation("Successfully created {@Board}", board);
+        logger.LogDebug("Successfully created {@Board}", board);
 
         return new CreateBoardResponse(
             board.Id,

@@ -10,16 +10,16 @@ public sealed class Card
     public Guid Id { get; private set; }
     public string Title { get; private set; }
     public string Description { get; private set; }
-    public Guid CreatedBy { get; private set; }
     public int Position { get; private set; }
+    public DateTime CreatedBy { get; private set; }
 
-    public Card(string title, string description, Guid createdBy, int position = 0)
+    public Card(string title, string description, int position = 0)
     {
         Id = Guid.CreateVersion7();
         Title = string.IsNullOrWhiteSpace(title) ? throw new ArgumentException("Title cannot be empty") : title;
         Description = description;
-        CreatedBy = createdBy;
         Position = position;
+        CreatedBy = DateTime.UtcNow;
     }
 
     public void UpdateTitle(string newTitle)
