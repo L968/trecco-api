@@ -2,7 +2,7 @@
 using Trecco.Application.Domain.Cards;
 using Trecco.Application.Domain.Lists;
 
-namespace Trecco.Application.Features.Cards;
+namespace Trecco.Application.Features.Cards.CreateCard;
 
 internal sealed class CreateCardHandler(
     IBoardRepository boardRepository,

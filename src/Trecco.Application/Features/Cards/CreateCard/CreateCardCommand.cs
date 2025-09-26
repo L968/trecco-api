@@ -1,4 +1,4 @@
-﻿namespace Trecco.Application.Features.Cards;
+﻿namespace Trecco.Application.Features.Cards.CreateCard;
 
 public sealed record CreateCardCommand(
     Guid BoardId,

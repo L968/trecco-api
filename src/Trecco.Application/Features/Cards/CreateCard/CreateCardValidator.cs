@@ -1,4 +1,4 @@
-﻿namespace Trecco.Application.Features.Cards;
+﻿namespace Trecco.Application.Features.Cards.CreateCard;
 
 internal sealed class CreateCardValidator : AbstractValidator<CreateCardCommand>
 {
