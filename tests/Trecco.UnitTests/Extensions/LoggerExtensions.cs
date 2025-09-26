@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-
-namespace Trecco.UnitTests.Extensions;
+﻿namespace Trecco.UnitTests.Extensions;
 
 internal static class LoggerExtensions
 {

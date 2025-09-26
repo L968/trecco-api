@@ -1,5 +1,4 @@
-﻿using Moq;
-using Trecco.Application.Common.Results;
+﻿using Trecco.Application.Common.Results;
 using Trecco.Application.Domain.Boards;
 using Trecco.Application.Domain.Cards;
 using Trecco.Application.Domain.Lists;
@@ -40,47 +39,32 @@ public class MoveCardHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ShouldReturnFailure_WhenCardNotFound()
+    public void MoveCard_ShouldThrow_WhenCardNotFound()
     {
         // Arrange
         var board = new Board("Test Board", Guid.NewGuid());
         List targetList = board.AddList("To Do");
-        var command = new MoveCardCommand(board.Id, Guid.NewGuid(), targetList.Id, 0);
+        var nonExistentCardId = Guid.NewGuid();
 
-        _repositoryMock
-            .Setup(r => r.GetByIdAsync(board.Id, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(board);
-
-        // Act
-        Result result = await _handler.Handle(command, CancellationToken.None);
-
-        // Assert
-        Assert.True(result.IsFailure);
-        Assert.Equal(CardErrors.NotFound(command.CardId).Code, result.Error.Code);
-        _repositoryMock.Verify(r => r.UpdateAsync(It.IsAny<Board>(), It.IsAny<CancellationToken>()), Times.Never);
+        // Act & Assert
+        Assert.Throws<InvalidOperationException>(() =>
+            board.MoveCard(nonExistentCardId, targetList.Id, 0)
+        );
     }
 
     [Fact]
-    public async Task Handle_ShouldReturnFailure_WhenTargetListNotFound()
+    public void MoveCard_ShouldThrow_WhenTargetListNotFound()
     {
         // Arrange
         var board = new Board("Test Board", Guid.NewGuid());
         List sourceList = board.AddList("Backlog");
         Card card = sourceList.AddCard("Title", "Description");
+        var nonExistentListId = Guid.NewGuid();
 
-        var command = new MoveCardCommand(board.Id, card.Id, Guid.NewGuid(), 0);
-
-        _repositoryMock
-            .Setup(r => r.GetByIdAsync(board.Id, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(board);
-
-        // Act
-        Result result = await _handler.Handle(command, CancellationToken.None);
-
-        // Assert
-        Assert.True(result.IsFailure);
-        Assert.Equal(ListErrors.NotFound(command.TargetListId).Code, result.Error.Code);
-        _repositoryMock.Verify(r => r.UpdateAsync(It.IsAny<Board>(), It.IsAny<CancellationToken>()), Times.Never);
+        // Act & Assert
+        Assert.Throws<InvalidOperationException>(() =>
+            board.MoveCard(card.Id, nonExistentListId, 0)
+        );
     }
 
     [Fact]
