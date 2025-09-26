@@ -22,6 +22,11 @@ public sealed class Card
         CreatedBy = DateTime.UtcNow;
     }
 
+    public void SetPosition(int position)
+    {
+        Position = position;
+    }
+
     public void UpdateTitle(string newTitle)
     {
         if (string.IsNullOrWhiteSpace(newTitle))

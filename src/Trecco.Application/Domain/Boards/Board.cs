@@ -1,5 +1,6 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using Trecco.Application.Domain.Cards;
 using Trecco.Application.Domain.Lists;
 
 namespace Trecco.Application.Domain.Boards;
@@ -27,6 +28,11 @@ public sealed class Board
         OwnerUserId = ownerUserId;
         CreatedAt = DateTime.UtcNow;
         UpdatedAt = DateTime.UtcNow;
+    }
+
+    public List? GetListByCardId(Guid cardId)
+    {
+        return _lists.FirstOrDefault(l => l.Cards.Any(c => c.Id == cardId));
     }
 
     public void UpdateName(string newName)
@@ -79,5 +85,21 @@ public sealed class Board
             _lists.Remove(list);
             UpdatedAt = DateTime.UtcNow;
         }
+    }
+
+    public void MoveCard(Guid cardId, Guid targetListId, int targetPosition)
+    {
+        List sourceList = GetListByCardId(cardId)
+            ?? throw new InvalidOperationException("Card not found");
+
+        Card card = sourceList.Cards.First(c => c.Id == cardId);
+
+        List targetList = _lists.FirstOrDefault(l => l.Id == targetListId)
+            ?? throw new InvalidOperationException("Target list not found");
+
+        sourceList.RemoveCard(cardId);
+        targetList.InsertCard(card, targetPosition);
+
+        UpdatedAt = DateTime.UtcNow;
     }
 }

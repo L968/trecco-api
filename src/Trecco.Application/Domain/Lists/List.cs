@@ -47,10 +47,28 @@ public sealed class List
     public void RemoveCard(Guid cardId)
     {
         Card? card = _cards.FirstOrDefault(c => c.Id == cardId);
-
-        if (card is not null)
+        if (card is null)
         {
-            _cards.Remove(card);
+            return;
         }
+
+        int removedPosition = card.Position;
+        _cards.Remove(card);
+
+        foreach (Card? c in _cards.Where(c => c.Position > removedPosition))
+        {
+            c.SetPosition(c.Position - 1);
+        }
+    }
+
+    public void InsertCard(Card card, int position)
+    {
+        foreach (Card? c in _cards.Where(c => c.Position >= position))
+        {
+            c.SetPosition(c.Position + 1);
+        }
+
+        card.SetPosition(position);
+        _cards.Insert(position, card);
     }
 }
