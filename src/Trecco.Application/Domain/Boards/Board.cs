@@ -35,6 +35,13 @@ public sealed class Board
         return _lists.FirstOrDefault(l => l.Cards.Any(c => c.Id == cardId));
     }
 
+    public Card? GetCardById(Guid cardId)
+    {
+        return _lists
+            .SelectMany(l => l.Cards)
+            .FirstOrDefault(c => c.Id == cardId);
+    }
+
     public void UpdateName(string newName)
     {
         if (string.IsNullOrWhiteSpace(newName))
@@ -87,19 +94,39 @@ public sealed class Board
         }
     }
 
-    public void MoveCard(Guid cardId, Guid targetListId, int targetPosition)
+    public Result MoveCard(Guid cardId, Guid targetListId, int targetPosition)
     {
-        List sourceList = GetListByCardId(cardId)
-            ?? throw new InvalidOperationException("Card not found");
+        List? sourceList = _lists.FirstOrDefault(l => l.Cards.Any(c => c.Id == cardId));
+        if (sourceList is null)
+        {
+            return Result.Failure(CardErrors.NotFound(cardId));
+        }
+
+        List? targetList = _lists.FirstOrDefault(l => l.Id == targetListId);
+        if (targetList is null)
+        {
+            return Result.Failure(ListErrors.NotFound(targetListId));
+        }
 
         Card card = sourceList.Cards.First(c => c.Id == cardId);
-
-        List targetList = _lists.FirstOrDefault(l => l.Id == targetListId)
-            ?? throw new InvalidOperationException("Target list not found");
 
         sourceList.RemoveCard(cardId);
         targetList.InsertCard(card, targetPosition);
 
+        UpdatedAt = DateTime.UtcNow;
+
+        return Result.Success();
+    }
+
+    public void DeleteCard(Guid cardId)
+    {
+        List? sourceList = GetListByCardId(cardId);
+        if (sourceList is null)
+        {
+            return;
+        }
+
+        sourceList.RemoveCard(cardId);
         UpdatedAt = DateTime.UtcNow;
     }
 }

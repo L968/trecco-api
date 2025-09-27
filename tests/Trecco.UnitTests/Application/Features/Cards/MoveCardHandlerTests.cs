@@ -3,9 +3,8 @@ using Trecco.Application.Domain.Boards;
 using Trecco.Application.Domain.Cards;
 using Trecco.Application.Domain.Lists;
 using Trecco.Application.Features.Cards.MoveCard;
-using Moq;
 
-namespace Trecco.UnitTests.Application.Features.Boards;
+namespace Trecco.UnitTests.Application.Features.Cards;
 
 public class MoveCardHandlerTests
 {
@@ -25,6 +24,7 @@ public class MoveCardHandlerTests
     {
         // Arrange
         var command = new MoveCardCommand(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), 0);
+
         _repositoryMock
             .Setup(r => r.GetByIdAsync(command.BoardId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((Board?)null);
@@ -39,36 +39,46 @@ public class MoveCardHandlerTests
     }
 
     [Fact]
-    public void MoveCard_ShouldReturnFailure_WhenCardNotFound()
+    public async Task Handle_ShouldReturnFailure_WhenCardNotFound()
     {
         // Arrange
         var board = new Board("Test Board", Guid.NewGuid());
-        List targetList = board.AddList("To Do");
-        var nonExistentCardId = Guid.NewGuid();
+        List targetList = board.AddList("Done");
+        var command = new MoveCardCommand(board.Id, Guid.NewGuid(), targetList.Id, 0);
+
+        _repositoryMock
+            .Setup(r => r.GetByIdAsync(command.BoardId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(board);
 
         // Act
-        Result result = board.MoveCard(nonExistentCardId, targetList.Id, 0);
+        Result result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
         Assert.True(result.IsFailure);
-        Assert.StartsWith(CardErrors.NotFound(nonExistentCardId).Description, result.Error.Description);
+        Assert.Equal(CardErrors.NotFound(command.CardId).Code, result.Error.Code);
+        _repositoryMock.Verify(r => r.UpdateAsync(It.IsAny<Board>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
-    public void MoveCard_ShouldReturnFailure_WhenTargetListNotFound()
+    public async Task Handle_ShouldReturnFailure_WhenTargetListNotFound()
     {
         // Arrange
         var board = new Board("Test Board", Guid.NewGuid());
-        List sourceList = board.AddList("Backlog");
-        Card card = sourceList.AddCard("Title", "Description");
-        var nonExistentListId = Guid.NewGuid();
+        List sourceList = board.AddList("To Do");
+        Card card = sourceList.AddCard("Task", "Desc");
+        var command = new MoveCardCommand(board.Id, card.Id, Guid.NewGuid(), 0);
+
+        _repositoryMock
+            .Setup(r => r.GetByIdAsync(command.BoardId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(board);
 
         // Act
-        Result result = board.MoveCard(card.Id, nonExistentListId, 0);
+        Result result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
         Assert.True(result.IsFailure);
-        Assert.StartsWith(ListErrors.NotFound(nonExistentListId).Description, result.Error.Description);
+        Assert.Equal(ListErrors.NotFound(command.TargetListId).Code, result.Error.Code);
+        _repositoryMock.Verify(r => r.UpdateAsync(It.IsAny<Board>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -76,14 +86,13 @@ public class MoveCardHandlerTests
     {
         // Arrange
         var board = new Board("Test Board", Guid.NewGuid());
-        List sourceList = board.AddList("Backlog");
-        List targetList = board.AddList("To Do");
-        Card card = sourceList.AddCard("Title", "Description");
-
+        List sourceList = board.AddList("To Do");
+        List targetList = board.AddList("Done");
+        Card card = sourceList.AddCard("Task", "Desc");
         var command = new MoveCardCommand(board.Id, card.Id, targetList.Id, 0);
 
         _repositoryMock
-            .Setup(r => r.GetByIdAsync(board.Id, It.IsAny<CancellationToken>()))
+            .Setup(r => r.GetByIdAsync(command.BoardId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(board);
 
         // Act
@@ -91,9 +100,8 @@ public class MoveCardHandlerTests
 
         // Assert
         Assert.True(result.IsSuccess);
-        Assert.DoesNotContain(sourceList.Cards, c => c.Id == card.Id);
-        Assert.Contains(targetList.Cards, c => c.Id == card.Id);
-        Assert.Equal(0, card.Position);
+        Assert.Equal(Error.None, result.Error);
+        Assert.Contains(card, targetList.Cards);
         _repositoryMock.Verify(r => r.UpdateAsync(board, It.IsAny<CancellationToken>()), Times.Once);
     }
 }

@@ -1,4 +1,5 @@
-﻿using Trecco.Application.Domain.Boards;
+﻿using Trecco.Application.Common.Results;
+using Trecco.Application.Domain.Boards;
 using Trecco.Application.Domain.Cards;
 using Trecco.Application.Domain.Lists;
 
@@ -99,39 +100,6 @@ public class BoardTests
     }
 
     [Fact]
-    public void MoveCard_ShouldMoveCardBetweenListsAndAdjustPositions_WithMultipleCards()
-    {
-        // Arrange
-        var board = new Board("Test", Guid.NewGuid());
-
-        List sourceList = board.AddList("To Do");
-        List targetList = board.AddList("Done");
-
-        Card card1 = sourceList.AddCard("Task 1", "Desc");
-        Card card2 = sourceList.AddCard("Task 2", "Desc");
-        Card card3 = sourceList.AddCard("Task 3", "Desc");
-
-        Card card4 = targetList.AddCard("Task 4", "Desc");
-        Card card5 = targetList.AddCard("Task 5", "Desc");
-
-        int targetPosition = 1;
-
-        // Act
-        board.MoveCard(card2.Id, targetList.Id, targetPosition);
-
-        // Assert
-        Assert.DoesNotContain(card2, sourceList.Cards);
-        Assert.Contains(card2, targetList.Cards);
-        Assert.Equal(targetPosition, card2.Position);
-
-        Assert.Equal(0, card4.Position);
-        Assert.Equal(2, card5.Position);
-
-        Assert.Equal(0, card1.Position);
-        Assert.Equal(1, card3.Position);
-    }
-
-    [Fact]
     public void GetListByCardId_ShouldReturnCorrectList()
     {
         // Arrange
@@ -147,31 +115,68 @@ public class BoardTests
     }
 
     [Fact]
-    public void MoveCard_ShouldThrow_WhenCardNotFound()
+    public void MoveCard_ShouldMoveCardBetweenListsAndAdjustPositions_WithMultipleCards()
+    {
+        // Arrange
+        var board = new Board("Test", Guid.NewGuid());
+        List sourceList = board.AddList("To Do");
+        List targetList = board.AddList("Done");
+
+        Card card1 = sourceList.AddCard("Task 1", "Desc");
+        Card card2 = sourceList.AddCard("Task 2", "Desc");
+        Card card3 = sourceList.AddCard("Task 3", "Desc");
+
+        Card card4 = targetList.AddCard("Task 4", "Desc");
+        Card card5 = targetList.AddCard("Task 5", "Desc");
+
+        int targetPosition = 1;
+
+        // Act
+        Result result = board.MoveCard(card2.Id, targetList.Id, targetPosition);
+
+        // Assert
+        Assert.True(result.IsSuccess);
+        Assert.DoesNotContain(card2, sourceList.Cards);
+        Assert.Contains(card2, targetList.Cards);
+        Assert.Equal(targetPosition, card2.Position);
+
+        Assert.Equal(0, card4.Position);
+        Assert.Equal(2, card5.Position);
+
+        Assert.Equal(0, card1.Position);
+        Assert.Equal(1, card3.Position);
+    }
+
+    [Fact]
+    public void MoveCard_ShouldReturnFailure_WhenCardNotFound()
     {
         // Arrange
         var board = new Board("Test", Guid.NewGuid());
         List targetList = board.AddList("Done");
+        var nonExistentCardId = Guid.NewGuid();
 
-        // Act & Assert
-        InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() =>
-            board.MoveCard(Guid.NewGuid(), targetList.Id, 0)
-        );
-        Assert.Equal("Card not found", ex.Message);
+        // Act
+        Result result = board.MoveCard(nonExistentCardId, targetList.Id, 0);
+
+        // Assert
+        Assert.True(result.IsFailure);
+        Assert.StartsWith(CardErrors.NotFound(nonExistentCardId).Description, result.Error.Description);
     }
 
     [Fact]
-    public void MoveCard_ShouldThrow_WhenTargetListNotFound()
+    public void MoveCard_ShouldReturnFailure_WhenTargetListNotFound()
     {
         // Arrange
         var board = new Board("Test", Guid.NewGuid());
         List sourceList = board.AddList("To Do");
         Card card = sourceList.AddCard("Task", "Desc");
+        var nonExistentListId = Guid.NewGuid();
 
-        // Act & Assert
-        InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() =>
-            board.MoveCard(card.Id, Guid.NewGuid(), 0)
-        );
-        Assert.Equal("Target list not found", ex.Message);
+        // Act
+        Result result = board.MoveCard(card.Id, nonExistentListId, 0);
+
+        // Assert
+        Assert.True(result.IsFailure);
+        Assert.StartsWith(ListErrors.NotFound(nonExistentListId).Description, result.Error.Description);
     }
 }

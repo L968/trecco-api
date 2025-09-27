@@ -21,6 +21,6 @@ internal sealed class CreateCardEndpoint : IEndpoint
                     onFailure: ApiResults.Problem
                 );
             })
-        .WithTags(Tags.Boards);
+        .WithTags(Tags.Cards);
     }
 }

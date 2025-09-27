@@ -6,7 +6,7 @@ internal sealed class CreateListEndpoint : IEndpoint
 {
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapPost("boards/{boardId:guid}/lists",
+        app.MapPost("boards/{boardId:Guid}/list",
             async (
                 Guid boardId,
                 CreateListCommand command,
@@ -20,6 +20,6 @@ internal sealed class CreateListEndpoint : IEndpoint
                     onFailure: ApiResults.Problem
                 );
             })
-        .WithTags(Tags.Boards);
+        .WithTags(Tags.Lists);
     }
 }

@@ -10,13 +10,16 @@ internal sealed class MoveCardHandler(
     public async Task<Result> Handle(MoveCardCommand request, CancellationToken cancellationToken)
     {
         Board? board = await boardRepository.GetByIdAsync(request.BoardId, cancellationToken);
-
         if (board is null)
         {
             return Result.Failure(BoardErrors.NotFound(request.BoardId));
         }
 
-        board.MoveCard(request.CardId, request.TargetListId, request.TargetPosition);
+        Result moveResult = board.MoveCard(request.CardId, request.TargetListId, request.TargetPosition);
+        if (moveResult.IsFailure)
+        {
+            return moveResult;
+        }
 
         await boardRepository.UpdateAsync(board, cancellationToken);
 
