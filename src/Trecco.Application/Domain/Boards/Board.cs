@@ -12,17 +12,18 @@ public sealed class Board : Entity
     [BsonRepresentation(BsonType.String)]
     public Guid Id { get; private set; }
     public string Name { get; private set; }
-
     [BsonRepresentation(BsonType.String)]
     public Guid OwnerUserId { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public DateTime UpdatedAt { get; private set; }
 
-    private readonly List<Guid> _memberIds = [];
+    [BsonElement("MembersIds")]
+    private List<Guid> _memberIds = [];
     public IReadOnlyCollection<Guid> MemberIds => _memberIds.AsReadOnly();
 
-    private readonly List<List> _lists = [];
-    public IReadOnlyCollection<List> Lists => _lists.AsReadOnly();
+    [BsonElement("Lists")]
+    private List<List> _lists = [];
+    public IReadOnlyCollection<List> Lists => _lists.ToList();
 
     public Board(string name, Guid ownerUserId)
     {
@@ -71,6 +72,11 @@ public sealed class Board : Entity
         {
             UpdatedAt = DateTime.UtcNow;
         }
+    }
+
+    public bool CanAccess(Guid userId)
+    {
+        return OwnerUserId == userId || _memberIds.Contains(userId);
     }
 
     public List AddList(string listName)

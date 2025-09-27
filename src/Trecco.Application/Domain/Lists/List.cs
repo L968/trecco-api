@@ -12,7 +12,8 @@ public sealed class List
     public string Name { get; private set; }
     public int Position { get; private set; }
 
-    private readonly List<Card> _cards = [];
+    [BsonElement("Cards")]
+    private List<Card> _cards = [];
     public IReadOnlyCollection<Card> Cards => _cards.AsReadOnly();
 
     public List(string name, int position)

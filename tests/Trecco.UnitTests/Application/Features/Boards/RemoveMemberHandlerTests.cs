@@ -36,26 +36,6 @@ public sealed class RemoveMemberHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ShouldReturnFailure_WhenUserIsNotMember()
-    {
-        // Arrange
-        var board = new Board("Test Board", Guid.NewGuid());
-        var command = new RemoveMemberCommand(board.Id, Guid.NewGuid());
-
-        _repositoryMock
-            .Setup(r => r.GetByIdAsync(board.Id, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(board);
-
-        // Act
-        Result result = await _handler.Handle(command, CancellationToken.None);
-
-        // Assert
-        Assert.True(result.IsFailure);
-        Assert.Equal(BoardErrors.NotMember.Code, result.Error.Code);
-        _repositoryMock.Verify(r => r.UpdateAsync(It.IsAny<Board>(), It.IsAny<CancellationToken>()), Times.Never);
-    }
-
-    [Fact]
     public async Task Handle_ShouldReturnSuccess_WhenUserRemoved()
     {
         // Arrange

@@ -14,9 +14,9 @@ internal static class BoardErrors
             $"User is already a member of this board."
         );
 
-    public static Error NotMember =>
-        Error.Conflict(
-            "Board.NotMember",
-            $"User is not a member of this board."
+    public static Error NotAuthorized =>
+        Error.Forbidden(
+            "Board.NotAuthorized",
+            "User is not allowed to access this board."
         );
 }

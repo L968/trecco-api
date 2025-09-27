@@ -29,7 +29,7 @@ public class CreateCardHandlerTests
             .ReturnsAsync((Board?)null);
 
         // Act
-        Result<CreateCardResponse> result = await _handler.Handle(command, CancellationToken.None);
+        Result result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
         Assert.True(result.IsFailure);
@@ -50,7 +50,7 @@ public class CreateCardHandlerTests
             .ReturnsAsync(board);
 
         // Act
-        Result<CreateCardResponse> result = await _handler.Handle(command, CancellationToken.None);
+        Result result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
         Assert.True(result.IsFailure);
@@ -71,12 +71,10 @@ public class CreateCardHandlerTests
             .ReturnsAsync(board);
 
         // Act
-        Result<CreateCardResponse> result = await _handler.Handle(command, CancellationToken.None);
+        Result result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
         Assert.True(result.IsSuccess);
-        Assert.NotEqual(Guid.Empty, result.Value.Id);
-        Assert.Contains(list.Cards, c => c.Id == result.Value.Id);
         _repositoryMock.Verify(r => r.UpdateAsync(board, It.IsAny<CancellationToken>()), Times.Once);
     }
 }

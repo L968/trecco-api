@@ -35,6 +35,12 @@ public static class ApiResults
             DefaultDetail: "An unexpected error occurred",
             StatusCode: StatusCodes.Status500InternalServerError,
             Uri: "https://tools.ietf.org/html/rfc7231#section-6.6.1"
+        ),
+        [ErrorType.Forbidden] = new ErrorMapping(
+            Title: "Forbidden",
+            DefaultDetail: "You do not have permission to perform this action.",
+            StatusCode: StatusCodes.Status403Forbidden,
+            Uri: "https://tools.ietf.org/html/rfc7231#section-6.5.3"
         )
     };
 
@@ -51,6 +57,7 @@ public static class ApiResults
         string detail = mapping.StatusCode switch
         {
             StatusCodes.Status400BadRequest or
+            StatusCodes.Status403Forbidden or
             StatusCodes.Status404NotFound or
             StatusCodes.Status409Conflict => error.Description,
             _ => mapping.DefaultDetail
