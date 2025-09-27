@@ -7,7 +7,12 @@ internal sealed class MoveCardEndpoint : IEndpoint
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
         app.MapPost("boards/{boardId:Guid}/cards/{cardId:Guid}/move",
-            async (Guid boardId, Guid cardId, MoveCardRequest request, ISender sender, CancellationToken cancellationToken) =>
+            async (
+                Guid boardId,
+                Guid cardId,
+                MoveCardRequest request,
+                ISender sender,
+                CancellationToken cancellationToken) =>
             {
                 var command = new MoveCardCommand(
                     boardId,

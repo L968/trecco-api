@@ -1,16 +1,19 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using Trecco.Application.Common.DomainEvents;
 using Trecco.Application.Domain.Cards;
 using Trecco.Application.Domain.Lists;
 
 namespace Trecco.Application.Domain.Boards;
 
-public sealed class Board
+public sealed class Board : Entity
 {
     [BsonId]
     [BsonRepresentation(BsonType.String)]
     public Guid Id { get; private set; }
     public string Name { get; private set; }
+
+    [BsonRepresentation(BsonType.String)]
     public Guid OwnerUserId { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public DateTime UpdatedAt { get; private set; }
@@ -114,6 +117,7 @@ public sealed class Board
         targetList.InsertCard(card, targetPosition);
 
         UpdatedAt = DateTime.UtcNow;
+        AddDomainEvent(new CardMovedDomainEvent(Id, cardId, targetListId, targetPosition));
 
         return Result.Success();
     }

@@ -1,9 +1,11 @@
-﻿using Trecco.Application.Domain.Boards;
+﻿using Trecco.Application.Common.Extensions;
+using Trecco.Application.Domain.Boards;
 
 namespace Trecco.Application.Features.Cards.MoveCard;
 
 internal sealed class MoveCardHandler(
     IBoardRepository boardRepository,
+    IMediator mediator,
     ILogger<MoveCardHandler> logger
 ) : IRequestHandler<MoveCardCommand, Result>
 {
@@ -22,6 +24,8 @@ internal sealed class MoveCardHandler(
         }
 
         await boardRepository.UpdateAsync(board, cancellationToken);
+
+        await mediator.DispatchDomainEventsAsync(board, cancellationToken);
 
         logger.LogDebug(
             "Card {CardId} successfully moved to list {TargetListId} at position {TargetPosition} in board {BoardId}",

@@ -1,4 +1,5 @@
-﻿using Trecco.Application.Common.Results;
+﻿using MediatR;
+using Trecco.Application.Common.Results;
 using Trecco.Application.Domain.Boards;
 using Trecco.Application.Domain.Cards;
 using Trecco.Application.Domain.Lists;
@@ -9,14 +10,16 @@ namespace Trecco.UnitTests.Application.Features.Cards;
 public class MoveCardHandlerTests
 {
     private readonly Mock<IBoardRepository> _repositoryMock;
+    private readonly Mock<IMediator> _mediatorMock;
     private readonly Mock<ILogger<MoveCardHandler>> _loggerMock;
     private readonly MoveCardHandler _handler;
 
     public MoveCardHandlerTests()
     {
         _repositoryMock = new Mock<IBoardRepository>();
+        _mediatorMock = new Mock<IMediator>();
         _loggerMock = new Mock<ILogger<MoveCardHandler>>();
-        _handler = new MoveCardHandler(_repositoryMock.Object, _loggerMock.Object);
+        _handler = new MoveCardHandler(_repositoryMock.Object, _mediatorMock.Object, _loggerMock.Object);
     }
 
     [Fact]
@@ -24,7 +27,6 @@ public class MoveCardHandlerTests
     {
         // Arrange
         var command = new MoveCardCommand(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), 0);
-
         _repositoryMock
             .Setup(r => r.GetByIdAsync(command.BoardId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((Board?)null);
@@ -36,49 +38,40 @@ public class MoveCardHandlerTests
         Assert.True(result.IsFailure);
         Assert.Equal(BoardErrors.NotFound(command.BoardId).Code, result.Error.Code);
         _repositoryMock.Verify(r => r.UpdateAsync(It.IsAny<Board>(), It.IsAny<CancellationToken>()), Times.Never);
+        _mediatorMock.Verify(m => m.Publish(It.IsAny<INotification>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
-    public async Task Handle_ShouldReturnFailure_WhenCardNotFound()
+    public void MoveCard_ShouldReturnFailure_WhenCardNotFound()
     {
         // Arrange
         var board = new Board("Test Board", Guid.NewGuid());
-        List targetList = board.AddList("Done");
-        var command = new MoveCardCommand(board.Id, Guid.NewGuid(), targetList.Id, 0);
-
-        _repositoryMock
-            .Setup(r => r.GetByIdAsync(command.BoardId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(board);
+        List targetList = board.AddList("To Do");
+        var nonExistentCardId = Guid.NewGuid();
 
         // Act
-        Result result = await _handler.Handle(command, CancellationToken.None);
+        Result result = board.MoveCard(nonExistentCardId, targetList.Id, 0);
 
         // Assert
         Assert.True(result.IsFailure);
-        Assert.Equal(CardErrors.NotFound(command.CardId).Code, result.Error.Code);
-        _repositoryMock.Verify(r => r.UpdateAsync(It.IsAny<Board>(), It.IsAny<CancellationToken>()), Times.Never);
+        Assert.StartsWith(CardErrors.NotFound(nonExistentCardId).Description, result.Error.Description);
     }
 
     [Fact]
-    public async Task Handle_ShouldReturnFailure_WhenTargetListNotFound()
+    public void MoveCard_ShouldReturnFailure_WhenTargetListNotFound()
     {
         // Arrange
         var board = new Board("Test Board", Guid.NewGuid());
-        List sourceList = board.AddList("To Do");
-        Card card = sourceList.AddCard("Task", "Desc");
-        var command = new MoveCardCommand(board.Id, card.Id, Guid.NewGuid(), 0);
-
-        _repositoryMock
-            .Setup(r => r.GetByIdAsync(command.BoardId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(board);
+        List sourceList = board.AddList("Backlog");
+        Card card = sourceList.AddCard("Title", "Description");
+        var nonExistentListId = Guid.NewGuid();
 
         // Act
-        Result result = await _handler.Handle(command, CancellationToken.None);
+        Result result = board.MoveCard(card.Id, nonExistentListId, 0);
 
         // Assert
         Assert.True(result.IsFailure);
-        Assert.Equal(ListErrors.NotFound(command.TargetListId).Code, result.Error.Code);
-        _repositoryMock.Verify(r => r.UpdateAsync(It.IsAny<Board>(), It.IsAny<CancellationToken>()), Times.Never);
+        Assert.StartsWith(ListErrors.NotFound(nonExistentListId).Description, result.Error.Description);
     }
 
     [Fact]
@@ -86,13 +79,14 @@ public class MoveCardHandlerTests
     {
         // Arrange
         var board = new Board("Test Board", Guid.NewGuid());
-        List sourceList = board.AddList("To Do");
-        List targetList = board.AddList("Done");
-        Card card = sourceList.AddCard("Task", "Desc");
+        List sourceList = board.AddList("Backlog");
+        List targetList = board.AddList("To Do");
+        Card card = sourceList.AddCard("Title", "Description");
+
         var command = new MoveCardCommand(board.Id, card.Id, targetList.Id, 0);
 
         _repositoryMock
-            .Setup(r => r.GetByIdAsync(command.BoardId, It.IsAny<CancellationToken>()))
+            .Setup(r => r.GetByIdAsync(board.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(board);
 
         // Act
@@ -100,8 +94,10 @@ public class MoveCardHandlerTests
 
         // Assert
         Assert.True(result.IsSuccess);
-        Assert.Equal(Error.None, result.Error);
-        Assert.Contains(card, targetList.Cards);
+        Assert.DoesNotContain(sourceList.Cards, c => c.Id == card.Id);
+        Assert.Contains(targetList.Cards, c => c.Id == card.Id);
+        Assert.Equal(0, card.Position);
         _repositoryMock.Verify(r => r.UpdateAsync(board, It.IsAny<CancellationToken>()), Times.Once);
+        _mediatorMock.Verify(m => m.Publish(It.IsAny<INotification>(), It.IsAny<CancellationToken>()), Times.AtLeastOnce);
     }
 }

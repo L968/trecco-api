@@ -1,4 +1,4 @@
-﻿namespace Trecco.Application.Features.Lists.Commands.CreateList;
+﻿namespace Trecco.Application.Features.Lists.CreateList;
 
 public sealed record CreateListCommand(
     Guid BoardId,

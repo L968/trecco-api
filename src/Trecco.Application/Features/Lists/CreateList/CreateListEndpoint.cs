@@ -1,6 +1,6 @@
 ﻿using Trecco.Application.Common.Endpoints;
 
-namespace Trecco.Application.Features.Lists.Commands.CreateList;
+namespace Trecco.Application.Features.Lists.CreateList;
 
 internal sealed class CreateListEndpoint : IEndpoint
 {

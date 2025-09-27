@@ -1,6 +1,6 @@
 ﻿using Trecco.Application.Common.Results;
 using Trecco.Application.Domain.Boards;
-using Trecco.Application.Features.Lists.Commands.CreateList;
+using Trecco.Application.Features.Lists.CreateList;
 
 namespace Trecco.UnitTests.Application.Features.Lists;
 

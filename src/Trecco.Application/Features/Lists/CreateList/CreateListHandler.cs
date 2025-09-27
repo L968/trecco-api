@@ -1,7 +1,7 @@
 ﻿using Trecco.Application.Domain.Boards;
 using Trecco.Application.Domain.Lists;
 
-namespace Trecco.Application.Features.Lists.Commands.CreateList;
+namespace Trecco.Application.Features.Lists.CreateList;
 
 internal sealed class CreateListHandler(
     IBoardRepository boardRepository,

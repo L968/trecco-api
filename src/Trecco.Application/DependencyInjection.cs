@@ -26,6 +26,8 @@ public static class DependencyInjection
             config.AddOpenBehavior(typeof(ValidationPipelineBehavior<,>));
         });
 
+        services.AddSignalR();
+
         services.AddValidatorsFromAssembly(assembly, includeInternalTypes: true);
         ValidatorOptions.Global.LanguageManager.Culture = CultureInfo.InvariantCulture;
 

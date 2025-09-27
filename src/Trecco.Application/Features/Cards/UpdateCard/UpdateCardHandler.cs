@@ -36,4 +36,3 @@ internal sealed class UpdateCardHandler(
         return Result.Success();
     }
 }
-
