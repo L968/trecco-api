@@ -9,11 +9,12 @@ internal sealed class CreateListEndpoint : IEndpoint
         app.MapPost("boards/{boardId:Guid}/list",
             async (
                 Guid boardId,
-                CreateListCommand command,
+                CreateListRequest request,
                 ISender sender,
-                CancellationToken ct) =>
+                CancellationToken cancellationToken) =>
             {
-                Result<CreateListResponse> result = await sender.Send(command with { BoardId = boardId }, ct);
+                var command = new CreateListCommand(boardId, request.Name);
+                Result<CreateListResponse> result = await sender.Send(command, cancellationToken);
 
                 return result.Match(
                     onSuccess: response => Results.Created($"/boards/{boardId}/lists/{response.Id}", response),
@@ -22,4 +23,6 @@ internal sealed class CreateListEndpoint : IEndpoint
             })
         .WithTags(Tags.Lists);
     }
+
+    internal sealed record CreateListRequest(string Name);
 }

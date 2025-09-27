@@ -29,7 +29,7 @@ internal sealed class UpdateCardEndpoint : IEndpoint
         .WithTags(Tags.Cards);
     }
 
-    public sealed record UpdateCardRequest(
+    internal sealed record UpdateCardRequest(
         string Title,
         string Description
     );

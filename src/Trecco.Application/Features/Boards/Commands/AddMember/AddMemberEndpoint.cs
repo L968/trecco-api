@@ -21,6 +21,6 @@ internal sealed class AddMemberEndpoint : IEndpoint
             })
         .WithTags(Tags.Boards);
     }
-}
 
-internal sealed record AddMemberRequest(Guid UserId);
+    internal sealed record AddMemberRequest(Guid UserId);
+}

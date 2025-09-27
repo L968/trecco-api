@@ -23,15 +23,11 @@ internal sealed class BoardRepository : IBoardRepository
             ))
             .ToListAsync(cancellationToken);
 
-    public async Task<bool> ExistsByNameAsync(string name, Guid ownerUserId, CancellationToken cancellationToken) =>
-        await _boards.Find(b => b.Name == name && b.OwnerUserId == ownerUserId)
-                     .AnyAsync(cancellationToken);
+    public async Task<Board?> GetByIdAsync(Guid id, CancellationToken cancellationToken) =>
+        await _boards.Find(b => b.Id == id).FirstOrDefaultAsync(cancellationToken);
 
     public async Task InsertAsync(Board board, CancellationToken cancellationToken) =>
         await _boards.InsertOneAsync(board, cancellationToken: cancellationToken);
-
-    public async Task<Board?> GetByIdAsync(Guid id, CancellationToken cancellationToken) =>
-        await _boards.Find(b => b.Id == id).FirstOrDefaultAsync(cancellationToken);
 
     public async Task UpdateAsync(Board board, CancellationToken cancellationToken) =>
         await _boards.ReplaceOneAsync(b => b.Id == board.Id, board, cancellationToken: cancellationToken);

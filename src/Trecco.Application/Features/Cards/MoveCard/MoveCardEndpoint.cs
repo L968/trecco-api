@@ -23,13 +23,13 @@ internal sealed class MoveCardEndpoint : IEndpoint
 
                 Result result = await sender.Send(command, cancellationToken);
 
-                return result.Match( Results.NoContent,ApiResults.Problem);
+                return result.Match(Results.NoContent,ApiResults.Problem);
             })
         .WithTags(Tags.Cards);
     }
-}
 
-public sealed record MoveCardRequest(
-    Guid TargetListId,
-    int TargetPosition
-);
+    internal sealed record MoveCardRequest(
+        Guid TargetListId,
+        int TargetPosition
+    );
+}

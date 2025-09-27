@@ -2,37 +2,37 @@
 
 public static class ApiResults
 {
-    private sealed record ErrorMapping(string Title, string Detail, string Uri, int StatusCode);
+    private sealed record ErrorMapping(string Title, string DefaultDetail, string Uri, int StatusCode);
 
     private static readonly Dictionary<ErrorType, ErrorMapping> _errorMappings = new()
     {
         [ErrorType.Validation] = new ErrorMapping(
             Title: "Validation failure",
-            Detail: "One or more validation errors occurred.",
+            DefaultDetail: "One or more validation errors occurred.",
             StatusCode: StatusCodes.Status400BadRequest,
             Uri: "https://tools.ietf.org/html/rfc7231#section-6.5.1"
         ),
         [ErrorType.Problem] = new ErrorMapping(
             Title: "Problem",
-            Detail: "An unexpected problem occurred.",
+            DefaultDetail: "An unexpected problem occurred.",
             StatusCode: StatusCodes.Status400BadRequest,
             Uri: "https://tools.ietf.org/html/rfc7231#section-6.5.1"
         ),
         [ErrorType.NotFound] = new ErrorMapping(
             Title: "Not Found",
-            Detail: "The requested resource was not found.",
+            DefaultDetail: "The requested resource was not found.",
             StatusCode: StatusCodes.Status404NotFound,
             Uri: "https://tools.ietf.org/html/rfc7231#section-6.5.4"
         ),
         [ErrorType.Conflict] = new ErrorMapping(
             Title: "Conflict",
-            Detail: "The request could not be completed due to a conflict.",
+            DefaultDetail: "The request could not be completed due to a conflict.",
             StatusCode: StatusCodes.Status409Conflict,
             Uri: "https://tools.ietf.org/html/rfc7231#section-6.5.8"
         ),
         [ErrorType.Failure] = new ErrorMapping(
             Title: "Server failure",
-            Detail: "An unexpected error occurred",
+            DefaultDetail: "An unexpected error occurred",
             StatusCode: StatusCodes.Status500InternalServerError,
             Uri: "https://tools.ietf.org/html/rfc7231#section-6.6.1"
         )
@@ -48,9 +48,17 @@ public static class ApiResults
         Error error = result.Error;
         ErrorMapping mapping = _errorMappings.GetValueOrDefault(error.Type, _errorMappings[ErrorType.Failure]);
 
+        string detail = mapping.StatusCode switch
+        {
+            StatusCodes.Status400BadRequest or
+            StatusCodes.Status404NotFound or
+            StatusCodes.Status409Conflict => error.Description,
+            _ => mapping.DefaultDetail
+        };
+
         return Microsoft.AspNetCore.Http.Results.Problem(
             title: mapping.Title,
-            detail: mapping.Detail,
+            detail: detail,
             statusCode: mapping.StatusCode,
             type: mapping.Uri,
             extensions: GetErrorExtensions(result)

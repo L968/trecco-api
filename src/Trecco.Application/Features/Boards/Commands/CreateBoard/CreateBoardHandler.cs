@@ -9,13 +9,6 @@ internal sealed class CreateBoardHandler(
 {
     public async Task<Result<CreateBoardResponse>> Handle(CreateBoardCommand request, CancellationToken cancellationToken)
     {
-        bool existingBoard = await boardRepository.ExistsByNameAsync(request.Name, request.OwnerUserId, cancellationToken);
-
-        if (existingBoard)
-        {
-            return Result.Failure(BoardErrors.BoardAlreadyExistsForUser(request.Name));
-        }
-
         var board = new Board(request.Name, request.OwnerUserId);
 
         await boardRepository.InsertAsync(board, cancellationToken);

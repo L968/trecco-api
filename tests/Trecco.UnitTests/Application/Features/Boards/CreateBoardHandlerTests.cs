@@ -18,35 +18,11 @@ public class CreateBoardHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ShouldReturnFailure_WhenBoardAlreadyExistsForUser()
-    {
-        // Arrange
-        var ownerUserId = Guid.NewGuid();
-        var command = new CreateBoardCommand("Test Board", ownerUserId);
-
-        _repositoryMock
-            .Setup(r => r.ExistsByNameAsync(command.Name, command.OwnerUserId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
-
-        // Act
-        Result<CreateBoardResponse> result = await _handler.Handle(command, CancellationToken.None);
-
-        // Assert
-        Assert.True(result.IsFailure);
-        Assert.Equal(BoardErrors.BoardAlreadyExistsForUser(command.Name).Code, result.Error.Code);
-        _repositoryMock.Verify(r => r.InsertAsync(It.IsAny<Board>(), It.IsAny<CancellationToken>()), Times.Never);
-    }
-
-    [Fact]
     public async Task Handle_ShouldReturnSuccess_WhenBoardIsCreated()
     {
         // Arrange
         var ownerUserId = Guid.NewGuid();
         var command = new CreateBoardCommand("New Board", ownerUserId);
-
-        _repositoryMock
-            .Setup(r => r.ExistsByNameAsync(command.Name, command.OwnerUserId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(false);
 
         // Act
         Result<CreateBoardResponse> result = await _handler.Handle(command, CancellationToken.None);

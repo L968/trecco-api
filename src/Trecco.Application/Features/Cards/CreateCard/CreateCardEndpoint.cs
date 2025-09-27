@@ -1,4 +1,5 @@
-﻿using Trecco.Application.Common.Endpoints;
+﻿using MediatR;
+using Trecco.Application.Common.Endpoints;
 
 namespace Trecco.Application.Features.Cards.CreateCard;
 
@@ -10,17 +11,23 @@ internal sealed class CreateCardEndpoint : IEndpoint
             async (
                 Guid boardId,
                 Guid listId,
-                CreateCardCommand command,
+                CreateCardRequest request,
                 ISender sender,
-                CancellationToken ct) =>
+                CancellationToken cancellationToken) =>
             {
-                Result<CreateCardResponse> result = await sender.Send(command with { BoardId = boardId, ListId = listId }, ct);
-
-                return result.Match(
-                    onSuccess: response => Results.Created($"/boards/{boardId}/lists/{listId}/cards/{response.Id}", response),
-                    onFailure: ApiResults.Problem
+                var command = new CreateCardCommand(
+                    boardId,
+                    listId,
+                    request.Title,
+                    request.Description
                 );
+
+                Result result = await sender.Send(command, cancellationToken);
+
+                return result.Match(Results.NoContent, ApiResults.Problem);
             })
         .WithTags(Tags.Cards);
     }
+
+    internal sealed record CreateCardRequest(string Title, string Description);
 }

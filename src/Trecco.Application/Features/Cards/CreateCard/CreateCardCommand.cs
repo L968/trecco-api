@@ -5,4 +5,4 @@ public sealed record CreateCardCommand(
     Guid ListId,
     string Title,
     string Description
-) : IRequest<Result<CreateCardResponse>>;
+) : IRequest<Result>;
