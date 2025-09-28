@@ -329,4 +329,78 @@ public class BoardTests
         Assert.Equal(0, existingCard.Position);
         Assert.Equal(1, cardToMove.Position);
     }
+
+    [Fact]
+    public void MoveCard_ShouldMoveToStart_AdjustPositionsCorrectly()
+    {
+        // Arrange
+        var board = new Board("Test Board", Guid.NewGuid());
+        List sourceList = board.AddList("Source");
+        List targetList = board.AddList("Target");
+
+        Card card1 = targetList.AddCard("Card 1", "Desc");
+        Card card2 = targetList.AddCard("Card 2", "Desc");
+        Card cardToMove = sourceList.AddCard("To Move", "Desc");
+
+        // Act
+        Result result = board.MoveCard(cardToMove.Id, targetList.Id, 0);
+
+        // Assert
+        Assert.True(result.IsSuccess);
+        Assert.DoesNotContain(cardToMove, sourceList.Cards);
+        Assert.Contains(cardToMove, targetList.Cards);
+        Assert.Equal(0, cardToMove.Position);
+        Assert.Equal(1, card1.Position);
+        Assert.Equal(2, card2.Position);
+    }
+
+    [Fact]
+    public void MoveCard_ShouldMoveToMiddle_AdjustPositionsCorrectly()
+    {
+        // Arrange
+        var board = new Board("Test Board", Guid.NewGuid());
+        List sourceList = board.AddList("Source");
+        List targetList = board.AddList("Target");
+
+        Card card1 = targetList.AddCard("Card 1", "Desc");
+        Card card2 = targetList.AddCard("Card 2", "Desc");
+        Card card3 = targetList.AddCard("Card 3", "Desc");
+        Card cardToMove = sourceList.AddCard("To Move", "Desc");
+
+        // Act
+        Result result = board.MoveCard(cardToMove.Id, targetList.Id, 1);
+
+        // Assert
+        Assert.True(result.IsSuccess);
+        Assert.DoesNotContain(cardToMove, sourceList.Cards);
+        Assert.Contains(cardToMove, targetList.Cards);
+        Assert.Equal(1, cardToMove.Position);
+        Assert.Equal(0, card1.Position);
+        Assert.Equal(2, card2.Position);
+        Assert.Equal(3, card3.Position);
+    }
+
+    [Fact]
+    public void MoveCard_ShouldMoveToEnd_AdjustPositionsCorrectly()
+    {
+        // Arrange
+        var board = new Board("Test Board", Guid.NewGuid());
+        List sourceList = board.AddList("Source");
+        List targetList = board.AddList("Target");
+
+        Card card1 = targetList.AddCard("Card 1", "Desc");
+        Card card2 = targetList.AddCard("Card 2", "Desc");
+        Card cardToMove = sourceList.AddCard("To Move", "Desc");
+
+        // Act
+        Result result = board.MoveCard(cardToMove.Id, targetList.Id, 99);
+
+        // Assert
+        Assert.True(result.IsSuccess);
+        Assert.DoesNotContain(cardToMove, sourceList.Cards);
+        Assert.Contains(cardToMove, targetList.Cards);
+        Assert.Equal(0, card1.Position);
+        Assert.Equal(1, card2.Position);
+        Assert.Equal(2, cardToMove.Position);
+    }
 }
