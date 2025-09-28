@@ -23,7 +23,7 @@ public class UpdateCardHandlerTests
     public async Task Handle_ShouldReturnFailure_WhenBoardNotFound()
     {
         // Arrange
-        var command = new UpdateCardCommand(Guid.NewGuid(), Guid.NewGuid(), "Title", "Desc");
+        var command = new UpdateCardCommand(Guid.NewGuid(), Guid.NewGuid(), "Title", "Desc", Guid.NewGuid());
         _repositoryMock
             .Setup(r => r.GetByIdAsync(command.BoardId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((Board?)null);
@@ -41,8 +41,9 @@ public class UpdateCardHandlerTests
     public async Task Handle_ShouldReturnFailure_WhenCardNotFound()
     {
         // Arrange
-        var board = new Board("Test Board", Guid.NewGuid());
-        var command = new UpdateCardCommand(board.Id, Guid.NewGuid(), "Title", "Desc");
+        var ownerId = Guid.NewGuid();
+        var board = new Board("Test Board", ownerId);
+        var command = new UpdateCardCommand(board.Id, Guid.NewGuid(), "Title", "Desc", ownerId);
 
         _repositoryMock
             .Setup(r => r.GetByIdAsync(command.BoardId, It.IsAny<CancellationToken>()))
@@ -58,14 +59,94 @@ public class UpdateCardHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ShouldReturnSuccess_WhenCardUpdated()
+    public async Task Handle_ShouldReturnFailure_WhenRequesterNotAuthorized()
     {
         // Arrange
-        var board = new Board("Test Board", Guid.NewGuid());
+        var ownerId = Guid.NewGuid();
+        var unauthorizedUserId = Guid.NewGuid();
+        var board = new Board("Test Board", ownerId);
         List list = board.AddList("To Do");
         Card card = list.AddCard("Old Title", "Old Desc");
 
-        var command = new UpdateCardCommand(board.Id, card.Id, "New Title", "New Desc");
+        var command = new UpdateCardCommand(board.Id, card.Id, "New Title", "New Desc", unauthorizedUserId);
+
+        _repositoryMock
+            .Setup(r => r.GetByIdAsync(command.BoardId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(board);
+
+        // Act
+        Result result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        Assert.True(result.IsFailure);
+        Assert.Equal(BoardErrors.NotAuthorized.Code, result.Error.Code);
+        _repositoryMock.Verify(r => r.UpdateAsync(It.IsAny<Board>(), It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task Handle_ShouldReturnSuccess_WhenCardUpdated()
+    {
+        // Arrange
+        var ownerId = Guid.NewGuid();
+        var board = new Board("Test Board", ownerId);
+        List list = board.AddList("To Do");
+        Card card = list.AddCard("Old Title", "Old Desc");
+
+        var command = new UpdateCardCommand(board.Id, card.Id, "New Title", "New Desc", ownerId);
+
+        _repositoryMock
+            .Setup(r => r.GetByIdAsync(command.BoardId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(board);
+
+        // Act
+        Result result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        Assert.True(result.IsSuccess);
+        Assert.Equal(Error.None, result.Error);
+        Assert.Equal("New Title", card.Title);
+        Assert.Equal("New Desc", card.Description);
+        _repositoryMock.Verify(r => r.UpdateAsync(board, It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task Handle_ShouldReturnSuccess_WhenCardUpdatedWithEmptyDescription()
+    {
+        // Arrange
+        var ownerId = Guid.NewGuid();
+        var board = new Board("Test Board", ownerId);
+        List list = board.AddList("To Do");
+        Card card = list.AddCard("Old Title", "Old Desc");
+
+        var command = new UpdateCardCommand(board.Id, card.Id, "New Title", "", ownerId);
+
+        _repositoryMock
+            .Setup(r => r.GetByIdAsync(command.BoardId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(board);
+
+        // Act
+        Result result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        Assert.True(result.IsSuccess);
+        Assert.Equal(Error.None, result.Error);
+        Assert.Equal("New Title", card.Title);
+        Assert.Equal("", card.Description);
+        _repositoryMock.Verify(r => r.UpdateAsync(board, It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task Handle_ShouldReturnSuccess_WhenMemberUpdatesCard()
+    {
+        // Arrange
+        var ownerId = Guid.NewGuid();
+        var memberId = Guid.NewGuid();
+        var board = new Board("Test Board", ownerId);
+        board.AddMember(memberId);
+        List list = board.AddList("To Do");
+        Card card = list.AddCard("Old Title", "Old Desc");
+
+        var command = new UpdateCardCommand(board.Id, card.Id, "New Title", "New Desc", memberId);
 
         _repositoryMock
             .Setup(r => r.GetByIdAsync(command.BoardId, It.IsAny<CancellationToken>()))

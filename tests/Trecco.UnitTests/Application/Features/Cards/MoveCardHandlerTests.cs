@@ -26,7 +26,7 @@ public class MoveCardHandlerTests
     public async Task Handle_ShouldReturnFailure_WhenBoardNotFound()
     {
         // Arrange
-        var command = new MoveCardCommand(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), 0);
+        var command = new MoveCardCommand(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), 0, Guid.NewGuid());
         _repositoryMock
             .Setup(r => r.GetByIdAsync(command.BoardId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((Board?)null);
@@ -75,15 +75,43 @@ public class MoveCardHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ShouldReturnSuccess_WhenCardMoved()
+    public async Task Handle_ShouldReturnFailure_WhenRequesterNotAuthorized()
     {
         // Arrange
-        var board = new Board("Test Board", Guid.NewGuid());
+        var ownerId = Guid.NewGuid();
+        var unauthorizedUserId = Guid.NewGuid();
+        var board = new Board("Test Board", ownerId);
         List sourceList = board.AddList("Backlog");
         List targetList = board.AddList("To Do");
         Card card = sourceList.AddCard("Title", "Description");
 
-        var command = new MoveCardCommand(board.Id, card.Id, targetList.Id, 0);
+        var command = new MoveCardCommand(board.Id, card.Id, targetList.Id, 0, unauthorizedUserId);
+
+        _repositoryMock
+            .Setup(r => r.GetByIdAsync(board.Id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(board);
+
+        // Act
+        Result result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        Assert.True(result.IsFailure);
+        Assert.Equal(BoardErrors.NotAuthorized.Code, result.Error.Code);
+        _repositoryMock.Verify(r => r.UpdateAsync(It.IsAny<Board>(), It.IsAny<CancellationToken>()), Times.Never);
+        _mediatorMock.Verify(m => m.Publish(It.IsAny<INotification>(), It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task Handle_ShouldReturnSuccess_WhenCardMoved()
+    {
+        // Arrange
+        var ownerId = Guid.NewGuid();
+        var board = new Board("Test Board", ownerId);
+        List sourceList = board.AddList("Backlog");
+        List targetList = board.AddList("To Do");
+        Card card = sourceList.AddCard("Title", "Description");
+
+        var command = new MoveCardCommand(board.Id, card.Id, targetList.Id, 0, ownerId);
 
         _repositoryMock
             .Setup(r => r.GetByIdAsync(board.Id, It.IsAny<CancellationToken>()))

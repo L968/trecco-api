@@ -22,14 +22,14 @@ public class CreateListHandlerTests
     {
         // Arrange
         var boardId = Guid.NewGuid();
-        var command = new CreateListCommand(boardId, "New List");
+        var command = new CreateListCommand(boardId, "New List", Guid.NewGuid());
 
         _repositoryMock
             .Setup(r => r.GetByIdAsync(boardId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((Board?)null);
 
         // Act
-        Result<CreateListResponse> result = await _handler.Handle(command, CancellationToken.None);
+        Result result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
         Assert.True(result.IsFailure);
@@ -38,23 +38,46 @@ public class CreateListHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ShouldReturnSuccess_WhenListCreated()
+    public async Task Handle_ShouldReturnFailure_WhenRequesterNotAuthorized()
     {
         // Arrange
+        var ownerId = Guid.NewGuid();
+        var unauthorizedUserId = Guid.NewGuid();
         var boardId = Guid.NewGuid();
-        var board = new Board("Test Board", Guid.NewGuid());
+        var board = new Board("Test Board", ownerId);
         _repositoryMock
             .Setup(r => r.GetByIdAsync(boardId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(board);
 
-        var command = new CreateListCommand(boardId, "New List");
+        var command = new CreateListCommand(boardId, "New List", unauthorizedUserId);
 
         // Act
-        Result<CreateListResponse> result = await _handler.Handle(command, CancellationToken.None);
+        Result result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        Assert.True(result.IsFailure);
+        Assert.Equal(BoardErrors.NotAuthorized.Code, result.Error.Code);
+        _repositoryMock.Verify(r => r.UpdateAsync(It.IsAny<Board>(), It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task Handle_ShouldReturnSuccess_WhenListCreated()
+    {
+        // Arrange
+        var ownerId = Guid.NewGuid();
+        var boardId = Guid.NewGuid();
+        var board = new Board("Test Board", ownerId);
+        _repositoryMock
+            .Setup(r => r.GetByIdAsync(boardId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(board);
+
+        var command = new CreateListCommand(boardId, "New List", ownerId);
+
+        // Act
+        Result result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
         Assert.True(result.IsSuccess);
-        Assert.NotEqual(Guid.Empty, result.Value.Id);
         _repositoryMock.Verify(r => r.UpdateAsync(board, It.IsAny<CancellationToken>()), Times.Once);
     }
 }

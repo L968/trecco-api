@@ -23,7 +23,7 @@ public class DeleteCardHandlerTests
     public async Task Handle_ShouldReturnFailure_WhenBoardNotFound()
     {
         // Arrange
-        var command = new DeleteCardCommand(Guid.NewGuid(), Guid.NewGuid());
+        var command = new DeleteCardCommand(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
         _repositoryMock
             .Setup(r => r.GetByIdAsync(command.BoardId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((Board?)null);
@@ -41,10 +41,11 @@ public class DeleteCardHandlerTests
     public async Task Handle_ShouldReturnSuccess_WhenCardDeleted()
     {
         // Arrange
-        var board = new Board("Test Board", Guid.NewGuid());
+        var ownerId = Guid.NewGuid();
+        var board = new Board("Test Board", ownerId);
         List list = board.AddList("To Do");
         Card card = list.AddCard("Title", "Desc");
-        var command = new DeleteCardCommand(board.Id, card.Id);
+        var command = new DeleteCardCommand(board.Id, card.Id, ownerId);
 
         _repositoryMock
             .Setup(r => r.GetByIdAsync(board.Id, It.IsAny<CancellationToken>()))
@@ -60,12 +61,37 @@ public class DeleteCardHandlerTests
     }
 
     [Fact]
+    public async Task Handle_ShouldReturnFailure_WhenRequesterNotAuthorized()
+    {
+        // Arrange
+        var ownerId = Guid.NewGuid();
+        var unauthorizedUserId = Guid.NewGuid();
+        var board = new Board("Test Board", ownerId);
+        List list = board.AddList("To Do");
+        Card card = list.AddCard("Title", "Desc");
+        var command = new DeleteCardCommand(board.Id, card.Id, unauthorizedUserId);
+
+        _repositoryMock
+            .Setup(r => r.GetByIdAsync(board.Id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(board);
+
+        // Act
+        Result result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        Assert.True(result.IsFailure);
+        Assert.Equal(BoardErrors.NotAuthorized.Code, result.Error.Code);
+        _repositoryMock.Verify(r => r.UpdateAsync(It.IsAny<Board>(), It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
     public async Task Handle_ShouldReturnSuccess_WhenCardDoesNotExist()
     {
         // Arrange
-        var board = new Board("Test Board", Guid.NewGuid());
+        var ownerId = Guid.NewGuid();
+        var board = new Board("Test Board", ownerId);
         board.AddList("To Do");
-        var command = new DeleteCardCommand(board.Id, Guid.NewGuid());
+        var command = new DeleteCardCommand(board.Id, Guid.NewGuid(), ownerId);
 
         _repositoryMock
             .Setup(r => r.GetByIdAsync(board.Id, It.IsAny<CancellationToken>()))

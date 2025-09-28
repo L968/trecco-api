@@ -22,7 +22,7 @@ public class CreateCardHandlerTests
     public async Task Handle_ShouldReturnFailure_WhenBoardNotFound()
     {
         // Arrange
-        var command = new CreateCardCommand(Guid.NewGuid(), Guid.NewGuid(), "Title", "Description");
+        var command = new CreateCardCommand(Guid.NewGuid(), Guid.NewGuid(), "Title", "Description", Guid.NewGuid());
 
         _repositoryMock
             .Setup(r => r.GetByIdAsync(command.BoardId, It.IsAny<CancellationToken>()))
@@ -42,8 +42,9 @@ public class CreateCardHandlerTests
     public async Task Handle_ShouldReturnFailure_WhenListNotFound()
     {
         // Arrange
-        var board = new Board("Test Board", Guid.NewGuid());
-        var command = new CreateCardCommand(board.Id, Guid.NewGuid(), "Title", "Description");
+        var ownerId = Guid.NewGuid();
+        var board = new Board("Test Board", ownerId);
+        var command = new CreateCardCommand(board.Id, Guid.NewGuid(), "Title", "Description", ownerId);
 
         _repositoryMock
             .Setup(r => r.GetByIdAsync(command.BoardId, It.IsAny<CancellationToken>()))
@@ -59,12 +60,80 @@ public class CreateCardHandlerTests
     }
 
     [Fact]
+    public async Task Handle_ShouldReturnFailure_WhenRequesterNotAuthorized()
+    {
+        // Arrange
+        var ownerId = Guid.NewGuid();
+        var unauthorizedUserId = Guid.NewGuid();
+        var board = new Board("Test Board", ownerId);
+        List list = board.AddList("To Do");
+        var command = new CreateCardCommand(board.Id, list.Id, "Title", "Description", unauthorizedUserId);
+
+        _repositoryMock
+            .Setup(r => r.GetByIdAsync(command.BoardId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(board);
+
+        // Act
+        Result result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        Assert.True(result.IsFailure);
+        Assert.Equal(BoardErrors.NotAuthorized.Code, result.Error.Code);
+        _repositoryMock.Verify(r => r.UpdateAsync(It.IsAny<Board>(), It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
     public async Task Handle_ShouldReturnSuccess_WhenCardCreated()
     {
         // Arrange
-        var board = new Board("Test Board", Guid.NewGuid());
+        var ownerId = Guid.NewGuid();
+        var board = new Board("Test Board", ownerId);
         List list = board.AddList("To Do");
-        var command = new CreateCardCommand(board.Id, list.Id, "Title", "Description");
+        var command = new CreateCardCommand(board.Id, list.Id, "Title", "Description", ownerId);
+
+        _repositoryMock
+            .Setup(r => r.GetByIdAsync(command.BoardId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(board);
+
+        // Act
+        Result result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        Assert.True(result.IsSuccess);
+        _repositoryMock.Verify(r => r.UpdateAsync(board, It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task Handle_ShouldReturnSuccess_WhenCardCreatedWithEmptyDescription()
+    {
+        // Arrange
+        var ownerId = Guid.NewGuid();
+        var board = new Board("Test Board", ownerId);
+        List list = board.AddList("To Do");
+        var command = new CreateCardCommand(board.Id, list.Id, "Title", "", ownerId);
+
+        _repositoryMock
+            .Setup(r => r.GetByIdAsync(command.BoardId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(board);
+
+        // Act
+        Result result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        Assert.True(result.IsSuccess);
+        _repositoryMock.Verify(r => r.UpdateAsync(board, It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task Handle_ShouldReturnSuccess_WhenMemberCreatesCard()
+    {
+        // Arrange
+        var ownerId = Guid.NewGuid();
+        var memberId = Guid.NewGuid();
+        var board = new Board("Test Board", ownerId);
+        board.AddMember(memberId);
+        List list = board.AddList("To Do");
+        var command = new CreateCardCommand(board.Id, list.Id, "Title", "Description", memberId);
 
         _repositoryMock
             .Setup(r => r.GetByIdAsync(command.BoardId, It.IsAny<CancellationToken>()))
