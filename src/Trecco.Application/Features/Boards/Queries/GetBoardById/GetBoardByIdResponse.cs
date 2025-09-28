@@ -3,6 +3,9 @@
 public sealed record GetBoardByIdResponse(
     Guid Id,
     string Name,
+    Guid OwnerUserId,
+    DateTime LastUpdate,
+    IReadOnlyCollection<Guid> MemberIds,
     IReadOnlyCollection<BoardListDto> Lists
 );
 

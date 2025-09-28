@@ -17,13 +17,14 @@ public sealed class Board : Entity
     public DateTime CreatedAt { get; private set; }
     public DateTime UpdatedAt { get; private set; }
 
-    [BsonElement("MembersIds")]
+    [BsonElement("MemberIds")]
+    [BsonRepresentation(BsonType.String)]
     private List<Guid> _memberIds = [];
     public IReadOnlyCollection<Guid> MemberIds => _memberIds.AsReadOnly();
 
     [BsonElement("Lists")]
     private List<List> _lists = [];
-    public IReadOnlyCollection<List> Lists => _lists.ToList();
+    public IReadOnlyCollection<List> Lists => _lists.AsReadOnly();
 
     public Board(string name, Guid ownerUserId)
     {
@@ -72,6 +73,26 @@ public sealed class Board : Entity
         {
             UpdatedAt = DateTime.UtcNow;
         }
+    }
+
+    public Result CanRemoveMember(Guid requesterId, Guid targetUserId)
+    {
+        if (requesterId == OwnerUserId)
+        {
+            if (targetUserId == OwnerUserId)
+            {
+                return Result.Failure(BoardErrors.CannotRemoveOwner);
+            }
+        }
+        else
+        {
+            if (requesterId != targetUserId)
+            {
+                return Result.Failure(BoardErrors.CannotRemoveOtherMember);
+            }
+        }
+
+        return Result.Success();
     }
 
     public bool HasAccess(Guid userId)

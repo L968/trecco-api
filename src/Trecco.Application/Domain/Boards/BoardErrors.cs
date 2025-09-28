@@ -19,4 +19,16 @@ internal static class BoardErrors
             "Board.NotAuthorized",
             "User is not allowed to access this board."
         );
+
+    public static Error CannotRemoveOwner =>
+        Error.Forbidden(
+            "Board.CannotRemoveOwner",
+            "The owner cannot remove themselves from the board."
+        );
+
+    public static Error CannotRemoveOtherMember =>
+        Error.Forbidden(
+            "Board.CannotRemoveOtherMember",
+            "A member cannot remove other members from the board."
+        );
 }

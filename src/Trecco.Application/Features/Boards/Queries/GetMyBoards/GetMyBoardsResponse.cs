@@ -2,5 +2,6 @@
 
 public sealed record GetMyBoardsResponse(
     Guid Id,
-    string Name
+    string Name,
+    int MembersCount
 );

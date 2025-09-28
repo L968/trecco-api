@@ -20,6 +20,12 @@ internal sealed class RemoveMemberHandler(
             return Result.Failure(BoardErrors.NotAuthorized);
         }
 
+        Result canRemoveResult = board.CanRemoveMember(request.RequesterId, request.UserId);
+        if (canRemoveResult.IsFailure)
+        {
+            return canRemoveResult;
+        }
+
         board.RemoveMember(request.UserId);
         await boardRepository.UpdateAsync(board, cancellationToken);
 

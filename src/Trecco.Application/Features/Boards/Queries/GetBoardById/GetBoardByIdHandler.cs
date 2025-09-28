@@ -25,6 +25,9 @@ internal sealed class GetBoardByIdHandler(
         var response = new GetBoardByIdResponse(
             Id: board.Id,
             Name: board.Name,
+            OwnerUserId: board.OwnerUserId,
+            LastUpdate: board.UpdatedAt,
+            MemberIds: board.MemberIds,
             Lists: board.Lists.Select(l => new BoardListDto(
                 Id: l.Id,
                 Name: l.Name,
