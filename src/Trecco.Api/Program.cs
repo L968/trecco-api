@@ -21,7 +21,20 @@ builder.Services.AddOpenApi();
 
 builder.Host.AddSerilogLogging();
 
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(corsPolicyBuilder =>
+    {
+        corsPolicyBuilder
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowAnyOrigin();
+    });
+});
+
 WebApplication app = builder.Build();
+
+app.UseCors();
 
 app.UseSerilogRequestLogging();
 
