@@ -179,4 +179,124 @@ public class BoardTests
         Assert.True(result.IsFailure);
         Assert.StartsWith(ListErrors.NotFound(nonExistentListId).Description, result.Error.Description);
     }
+
+    [Fact]
+    public void Constructor_ShouldThrowArgumentNullException_WhenNameIsNull()
+    {
+        // Arrange & Act & Assert
+        Assert.Throws<ArgumentNullException>(() => new Board(null!, Guid.NewGuid()));
+    }
+
+    [Fact]
+    public void UpdateName_ShouldThrowArgumentException_WhenNameIsEmpty()
+    {
+        // Arrange
+        var board = new Board("Test", Guid.NewGuid());
+
+        // Act & Assert
+        Assert.Throws<ArgumentException>(() => board.UpdateName(""));
+        Assert.Throws<ArgumentException>(() => board.UpdateName("   "));
+    }
+
+    [Fact]
+    public void HasAccess_ShouldReturnTrue_WhenUserIsOwner()
+    {
+        // Arrange
+        var ownerId = Guid.NewGuid();
+        var board = new Board("Test", ownerId);
+
+        // Act
+        bool hasAccess = board.HasAccess(ownerId);
+
+        // Assert
+        Assert.True(hasAccess);
+    }
+
+    [Fact]
+    public void HasAccess_ShouldReturnTrue_WhenUserIsMember()
+    {
+        // Arrange
+        var ownerId = Guid.NewGuid();
+        var memberId = Guid.NewGuid();
+        var board = new Board("Test", ownerId);
+        board.AddMember(memberId);
+
+        // Act
+        bool hasAccess = board.HasAccess(memberId);
+
+        // Assert
+        Assert.True(hasAccess);
+    }
+
+    [Fact]
+    public void HasAccess_ShouldReturnFalse_WhenUserIsNotOwnerOrMember()
+    {
+        // Arrange
+        var ownerId = Guid.NewGuid();
+        var unauthorizedUserId = Guid.NewGuid();
+        var board = new Board("Test", ownerId);
+
+        // Act
+        bool hasAccess = board.HasAccess(unauthorizedUserId);
+
+        // Assert
+        Assert.False(hasAccess);
+    }
+
+    [Fact]
+    public void GetCardById_ShouldReturnNull_WhenCardDoesNotExist()
+    {
+        // Arrange
+        var board = new Board("Test", Guid.NewGuid());
+        var nonExistentCardId = Guid.NewGuid();
+
+        // Act
+        Card? card = board.GetCardById(nonExistentCardId);
+
+        // Assert
+        Assert.Null(card);
+    }
+
+    [Fact]
+    public void DeleteCard_ShouldNotThrow_WhenCardDoesNotExist()
+    {
+        // Arrange
+        var board = new Board("Test", Guid.NewGuid());
+        var nonExistentCardId = Guid.NewGuid();
+
+        // Act & Assert
+        Exception? exception = Record.Exception(() => board.DeleteCard(nonExistentCardId));
+        Assert.Null(exception);
+    }
+
+    [Fact]
+    public void RemoveList_ShouldNotThrow_WhenListDoesNotExist()
+    {
+        // Arrange
+        var board = new Board("Test", Guid.NewGuid());
+        var nonExistentListId = Guid.NewGuid();
+
+        // Act & Assert
+        Exception? exception = Record.Exception(() => board.RemoveList(nonExistentListId));
+        Assert.Null(exception);
+    }
+
+    [Fact]
+    public void MoveCard_ShouldReturnSuccess_WhenCardMovedSuccessfully()
+    {
+        // Arrange
+        var board = new Board("Test", Guid.NewGuid());
+        List sourceList = board.AddList("To Do");
+        List targetList = board.AddList("Done");
+        Card card = sourceList.AddCard("Task", "Desc");
+
+        // Act
+        Result result = board.MoveCard(card.Id, targetList.Id, 0);
+
+        // Assert
+        Assert.True(result.IsSuccess);
+        Assert.DoesNotContain(card, sourceList.Cards);
+        Assert.Contains(card, targetList.Cards);
+        Assert.Equal(0, card.Position);
+    }
 }

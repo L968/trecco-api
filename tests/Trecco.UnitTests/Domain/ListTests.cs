@@ -55,4 +55,85 @@ public class ListTests
         Assert.Equal(2, card2.Position);
         Assert.Equal(newCard, list.Cards.ElementAt(1));
     }
+
+    [Fact]
+    public void Constructor_ShouldThrowArgumentNullException_WhenNameIsNull()
+    {
+        // Arrange & Act & Assert
+        Assert.Throws<ArgumentNullException>(() => new List(null!, 0));
+    }
+
+    [Fact]
+    public void UpdateName_ShouldThrowArgumentException_WhenNameIsEmpty()
+    {
+        // Arrange
+        var list = new List("List", 0);
+
+        // Act & Assert
+        Assert.Throws<ArgumentException>(() => list.UpdateName(""));
+        Assert.Throws<ArgumentException>(() => list.UpdateName("   "));
+    }
+
+    [Fact]
+    public void AddCard_ShouldThrowArgumentException_WhenTitleIsEmpty()
+    {
+        // Arrange
+        var list = new List("List", 0);
+
+        // Act & Assert
+        Assert.Throws<ArgumentException>(() => list.AddCard("", "Description"));
+        Assert.Throws<ArgumentException>(() => list.AddCard("   ", "Description"));
+    }
+
+    [Fact]
+    public void InsertCard_ShouldThrowArgumentOutOfRangeException_WhenPositionIsNegative()
+    {
+        // Arrange
+        var list = new List("List", 0);
+        var newCard = new Card("Inserted", "Desc");
+
+        // Act & Assert
+        Assert.Throws<ArgumentOutOfRangeException>(() => list.InsertCard(newCard, -1));
+    }
+
+    [Fact]
+    public void InsertCard_ShouldThrowArgumentOutOfRangeException_WhenPositionIsGreaterThanListSize()
+    {
+        // Arrange
+        var list = new List("List", 0);
+        var newCard = new Card("Inserted", "Desc");
+
+        // Act & Assert
+        Assert.Throws<ArgumentOutOfRangeException>(() => list.InsertCard(newCard, 10));
+    }
+
+    [Fact]
+    public void RemoveCard_ShouldNotThrow_WhenCardDoesNotExist()
+    {
+        // Arrange
+        var list = new List("List", 0);
+        var nonExistentCardId = Guid.NewGuid();
+
+        // Act & Assert
+        Exception? exception = Record.Exception(() => list.RemoveCard(nonExistentCardId));
+        Assert.Null(exception);
+    }
+
+    [Fact]
+    public void AddCard_ShouldAddMultipleCardsWithCorrectPositions()
+    {
+        // Arrange
+        var list = new List("List", 0);
+
+        // Act
+        Card card1 = list.AddCard("Task 1", "Desc");
+        Card card2 = list.AddCard("Task 2", "Desc");
+        Card card3 = list.AddCard("Task 3", "Desc");
+
+        // Assert
+        Assert.Equal(3, list.Cards.Count);
+        Assert.Equal(0, card1.Position);
+        Assert.Equal(1, card2.Position);
+        Assert.Equal(2, card3.Position);
+    }
 }
