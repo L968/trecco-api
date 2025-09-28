@@ -1,4 +1,5 @@
 using Trecco.Application.Domain.Users;
+using Xunit;
 
 namespace Trecco.UnitTests.Domain;
 

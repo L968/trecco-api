@@ -5,36 +5,44 @@ namespace Trecco.UnitTests.Domain;
 public class CardTests
 {
     [Fact]
-    public void UpdateTitle_ShouldChangeTitle()
+    public void Should_CreateCard_WithValidValues()
     {
         // Arrange
-        var card = new Card("Old", "Desc");
+        string title = "Test Card";
+        string description = "Test Description";
 
         // Act
-        card.UpdateTitle("New");
+        var card = new Card(title, description);
 
         // Assert
-        Assert.Equal("New", card.Title);
+        Assert.Equal(title, card.Title);
+        Assert.Equal(description, card.Description);
+        Assert.Equal(0, card.Position);
+        Assert.NotEqual(Guid.Empty, card.Id);
     }
 
     [Fact]
-    public void UpdateDescription_ShouldChangeDescription()
+    public void Should_CreateCard_WithPosition()
     {
         // Arrange
-        var card = new Card("Title", "Old");
+        string title = "Test Card";
+        string description = "Test Description";
+        int position = 5;
 
         // Act
-        card.UpdateDescription("New");
+        var card = new Card(title, description, position);
 
         // Assert
-        Assert.Equal("New", card.Description);
+        Assert.Equal(title, card.Title);
+        Assert.Equal(description, card.Description);
+        Assert.Equal(position, card.Position);
     }
 
     [Fact]
-    public void SetPosition_ShouldChangePosition()
+    public void SetPosition_ShouldUpdatePosition()
     {
         // Arrange
-        var card = new Card("Title", "Desc", 0);
+        var card = new Card("Test", "Desc", 0);
 
         // Act
         card.SetPosition(5);
@@ -44,22 +52,29 @@ public class CardTests
     }
 
     [Fact]
-    public void Constructor_ShouldCreateCard_WithValidValues()
+    public void UpdateTitle_ShouldChangeTitle_WhenValidTitle()
     {
         // Arrange
-        string title = "Test Title";
-        string description = "Test Description";
-        int position = 2;
+        var card = new Card("Old Title", "Description");
 
         // Act
-        var card = new Card(title, description, position);
+        card.UpdateTitle("New Title");
 
         // Assert
-        Assert.Equal(title, card.Title);
-        Assert.Equal(description, card.Description);
-        Assert.Equal(position, card.Position);
-        Assert.NotEqual(Guid.Empty, card.Id);
-        Assert.True(card.CreatedBy <= DateTime.UtcNow);
+        Assert.Equal("New Title", card.Title);
+    }
+
+    [Fact]
+    public void UpdateDescription_ShouldChangeDescription()
+    {
+        // Arrange
+        var card = new Card("Title", "Old Description");
+
+        // Act
+        card.UpdateDescription("New Description");
+
+        // Assert
+        Assert.Equal("New Description", card.Description);
     }
 
     [Fact]
@@ -71,14 +86,45 @@ public class CardTests
     }
 
     [Fact]
+    public void Constructor_ShouldThrowArgumentException_WhenTitleIsNull()
+    {
+        // Arrange & Act & Assert
+        Assert.Throws<ArgumentException>(() => new Card(null!, "Description"));
+    }
+
+    [Fact]
     public void UpdateTitle_ShouldThrowArgumentException_WhenTitleIsEmpty()
     {
         // Arrange
-        var card = new Card("Title", "Description");
+        var card = new Card("Valid Title", "Description");
 
         // Act & Assert
         Assert.Throws<ArgumentException>(() => card.UpdateTitle(""));
         Assert.Throws<ArgumentException>(() => card.UpdateTitle("   "));
+    }
+
+    [Fact]
+    public void UpdateTitle_ShouldThrowArgumentException_WhenTitleIsNull()
+    {
+        // Arrange
+        var card = new Card("Valid Title", "Description");
+
+        // Act & Assert
+        Assert.Throws<ArgumentException>(() => card.UpdateTitle(null!));
+    }
+
+    [Fact]
+    public void Constructor_ShouldSetCreatedByToCurrentTime()
+    {
+        // Arrange
+        DateTime beforeCreation = DateTime.UtcNow;
+
+        // Act
+        var card = new Card("Title", "Description");
+
+        // Assert
+        Assert.True(card.CreatedBy >= beforeCreation);
+        Assert.True(card.CreatedBy <= DateTime.UtcNow);
     }
 
     [Fact]

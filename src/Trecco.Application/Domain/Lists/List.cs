@@ -64,12 +64,19 @@ public sealed class List
 
     public void InsertCard(Card card, int position)
     {
-        foreach (Card? c in _cards.Where(c => c.Position >= position))
+        if (position < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(position), "Position cannot be negative.");
+        }
+
+        int clampedPosition = Math.Min(position, _cards.Count);
+
+        foreach (Card c in _cards.Where(c => c.Position >= clampedPosition))
         {
             c.SetPosition(c.Position + 1);
         }
 
-        card.SetPosition(position);
-        _cards.Insert(position, card);
+        card.SetPosition(clampedPosition);
+        _cards.Insert(clampedPosition, card);
     }
 }

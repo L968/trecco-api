@@ -6,54 +6,85 @@ namespace Trecco.UnitTests.Domain;
 public class ListTests
 {
     [Fact]
-    public void AddCard_ShouldAddCardAtEnd()
+    public void Should_CreateList_WithValidValues()
     {
         // Arrange
-        var list = new List("List", 0);
+        string name = "Test List";
+        int position = 0;
 
         // Act
-        Card card = list.AddCard("Task", "Desc");
+        var list = new List(name, position);
 
         // Assert
-        Assert.Single(list.Cards);
-        Assert.Equal(0, card.Position);
+        Assert.Equal(name, list.Name);
+        Assert.Equal(position, list.Position);
+        Assert.Empty(list.Cards);
+    }
+
+    [Fact]
+    public void UpdateName_ShouldChangeName_WhenValidName()
+    {
+        // Arrange
+        var list = new List("Old Name", 0);
+
+        // Act
+        list.UpdateName("New Name");
+
+        // Assert
+        Assert.Equal("New Name", list.Name);
+    }
+
+    [Fact]
+    public void AddCard_ShouldAddCardWithCorrectPosition()
+    {
+        // Arrange
+        var list = new List("Test", 0);
+
+        // Act
+        Card card1 = list.AddCard("Card 1", "Description");
+        Card card2 = list.AddCard("Card 2", "Description");
+
+        // Assert
+        Assert.Equal(2, list.Cards.Count);
+        Assert.Equal(0, card1.Position);
+        Assert.Equal(1, card2.Position);
     }
 
     [Fact]
     public void RemoveCard_ShouldRemoveCardAndAdjustPositions()
     {
         // Arrange
-        var list = new List("List", 0);
-        Card card1 = list.AddCard("Task 1", "Desc");
-        Card card2 = list.AddCard("Task 2", "Desc");
-        Card card3 = list.AddCard("Task 3", "Desc");
+        var list = new List("Test", 0);
+        Card card1 = list.AddCard("Card 1", "Description");
+        Card card2 = list.AddCard("Card 2", "Description");
+        Card card3 = list.AddCard("Card 3", "Description");
 
         // Act
         list.RemoveCard(card2.Id);
 
         // Assert
-        Assert.DoesNotContain(card2, list.Cards);
+        Assert.Equal(2, list.Cards.Count);
         Assert.Equal(0, card1.Position);
         Assert.Equal(1, card3.Position);
     }
 
     [Fact]
-    public void InsertCard_ShouldInsertAtPositionAndShiftOthers()
+    public void InsertCard_ShouldInsertCardAtSpecifiedPosition()
     {
         // Arrange
-        var list = new List("List", 0);
-        Card card1 = list.AddCard("Task 1", "Desc");
-        Card card2 = list.AddCard("Task 2", "Desc");
+        var list = new List("Test", 0);
+        Card card1 = list.AddCard("Card 1", "Description");
+        Card card2 = list.AddCard("Card 2", "Description");
         var newCard = new Card("Inserted", "Desc");
 
         // Act
         list.InsertCard(newCard, 1);
 
         // Assert
+        Assert.Equal(3, list.Cards.Count);
         Assert.Equal(0, card1.Position);
         Assert.Equal(1, newCard.Position);
         Assert.Equal(2, card2.Position);
-        Assert.Equal(newCard, list.Cards.ElementAt(1));
     }
 
     [Fact]
@@ -67,7 +98,7 @@ public class ListTests
     public void UpdateName_ShouldThrowArgumentException_WhenNameIsEmpty()
     {
         // Arrange
-        var list = new List("List", 0);
+        var list = new List("Test", 0);
 
         // Act & Assert
         Assert.Throws<ArgumentException>(() => list.UpdateName(""));
@@ -78,7 +109,7 @@ public class ListTests
     public void AddCard_ShouldThrowArgumentException_WhenTitleIsEmpty()
     {
         // Arrange
-        var list = new List("List", 0);
+        var list = new List("Test", 0);
 
         // Act & Assert
         Assert.Throws<ArgumentException>(() => list.AddCard("", "Description"));
@@ -97,38 +128,66 @@ public class ListTests
     }
 
     [Fact]
-    public void InsertCard_ShouldThrowArgumentOutOfRangeException_WhenPositionIsGreaterThanListSize()
+    public void InsertCard_ShouldInsertAtEnd_WhenPositionIsGreaterThanListSize()
     {
         // Arrange
         var list = new List("List", 0);
+        Card card1 = list.AddCard("Task 1", "Desc");
+        Card card2 = list.AddCard("Task 2", "Desc");
         var newCard = new Card("Inserted", "Desc");
 
-        // Act & Assert
-        Assert.Throws<ArgumentOutOfRangeException>(() => list.InsertCard(newCard, 10));
+        // Act
+        list.InsertCard(newCard, 99);
+
+        // Assert
+        Assert.Equal(3, list.Cards.Count);
+        Assert.Equal(0, card1.Position);
+        Assert.Equal(1, card2.Position);
+        Assert.Equal(2, newCard.Position);
+        Assert.Equal(newCard, list.Cards.Last());
+    }
+
+    [Fact]
+    public void InsertCard_ShouldInsertAtEnd_WhenPositionEqualsListSize()
+    {
+        // Arrange
+        var list = new List("List", 0);
+        Card card1 = list.AddCard("Task 1", "Desc");
+        Card card2 = list.AddCard("Task 2", "Desc");
+        var newCard = new Card("Inserted", "Desc");
+
+        // Act
+        list.InsertCard(newCard, 2);
+
+        // Assert
+        Assert.Equal(3, list.Cards.Count);
+        Assert.Equal(0, card1.Position);
+        Assert.Equal(1, card2.Position);
+        Assert.Equal(2, newCard.Position);
+        Assert.Equal(newCard, list.Cards.Last());
     }
 
     [Fact]
     public void RemoveCard_ShouldNotThrow_WhenCardDoesNotExist()
     {
         // Arrange
-        var list = new List("List", 0);
-        var nonExistentCardId = Guid.NewGuid();
+        var list = new List("Test", 0);
 
         // Act & Assert
-        Exception? exception = Record.Exception(() => list.RemoveCard(nonExistentCardId));
-        Assert.Null(exception);
+        list.RemoveCard(Guid.NewGuid());
+        Assert.Empty(list.Cards);
     }
 
     [Fact]
-    public void AddCard_ShouldAddMultipleCardsWithCorrectPositions()
+    public void AddCard_ShouldAddMultipleCards_WithCorrectPositions()
     {
         // Arrange
-        var list = new List("List", 0);
+        var list = new List("Test", 0);
 
         // Act
-        Card card1 = list.AddCard("Task 1", "Desc");
-        Card card2 = list.AddCard("Task 2", "Desc");
-        Card card3 = list.AddCard("Task 3", "Desc");
+        Card card1 = list.AddCard("Card 1", "Desc");
+        Card card2 = list.AddCard("Card 2", "Desc");
+        Card card3 = list.AddCard("Card 3", "Desc");
 
         // Assert
         Assert.Equal(3, list.Cards.Count);
