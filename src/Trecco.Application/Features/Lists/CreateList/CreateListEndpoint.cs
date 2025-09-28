@@ -17,7 +17,7 @@ internal sealed class CreateListEndpoint : IEndpoint
             {
                 if (requesterId is null)
                 {
-                    return Results.Forbid();
+                    return Results.StatusCode(StatusCodes.Status403Forbidden);
                 }
 
                 var command = new CreateListCommand(boardId, request.Name, requesterId.Value);

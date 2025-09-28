@@ -17,7 +17,7 @@ internal sealed class RemoveMemberEndpoint : IEndpoint
             {
                 if (requesterId is null)
                 {
-                    return Results.Forbid();
+                    return Results.StatusCode(StatusCodes.Status403Forbidden);
                 }
 
                 var command = new RemoveMemberCommand(boardId, userId, requesterId.Value);

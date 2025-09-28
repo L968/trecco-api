@@ -15,7 +15,7 @@ internal sealed class GetMyBoardsEndpoint : IEndpoint
             {
                 if (requesterId is null)
                 {
-                    return Results.Forbid();
+                    return Results.StatusCode(StatusCodes.Status403Forbidden);
                 }
 
                 var query = new GetMyBoardsQuery(requesterId.Value);

@@ -17,7 +17,7 @@ internal sealed class AddMemberEndpoint : IEndpoint
             {
                 if (requesterId is null)
                 {
-                    return Results.Forbid();
+                    return Results.StatusCode(StatusCodes.Status403Forbidden);
                 }
 
                 var command = new AddMemberCommand(boardId, request.UserId, requesterId.Value);
