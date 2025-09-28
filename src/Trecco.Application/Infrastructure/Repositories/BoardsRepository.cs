@@ -18,8 +18,7 @@ internal sealed class BoardRepository : IBoardRepository
             .Find(b => b.OwnerUserId == ownerUserId)
             .Project(b => new GetMyBoardsResponse(
                 b.Id,
-                b.Name,
-                b.OwnerUserId
+                b.Name
             ))
             .ToListAsync(cancellationToken);
 
