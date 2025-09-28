@@ -15,6 +15,11 @@ internal sealed class DeleteCardHandler(
             return Result.Failure(BoardErrors.NotFound(request.BoardId));
         }
 
+        if (!board.HasAccess(request.RequesterId))
+        {
+            return Result.Failure(BoardErrors.NotAuthorized);
+        }
+
         board.DeleteCard(request.CardId);
 
         await boardRepository.UpdateAsync(board, cancellationToken);

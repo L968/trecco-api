@@ -12,14 +12,17 @@ internal sealed class CreateCardHandler(
     public async Task<Result> Handle(CreateCardCommand request, CancellationToken cancellationToken)
     {
         Board? board = await boardRepository.GetByIdAsync(request.BoardId, cancellationToken);
-
         if (board is null)
         {
             return Result.Failure(BoardErrors.NotFound(request.BoardId));
         }
 
-        List? list = board.Lists.FirstOrDefault(l => l.Id == request.ListId);
+        if (!board.HasAccess(request.RequesterId))
+        {
+            return Result.Failure(BoardErrors.NotAuthorized);
+        }
 
+        List? list = board.Lists.FirstOrDefault(l => l.Id == request.ListId);
         if (list is null)
         {
             return Result.Failure(ListErrors.NotFound(request.ListId));

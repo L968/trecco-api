@@ -2,5 +2,6 @@
 
 public sealed record DeleteCardCommand(
     Guid BoardId,
-    Guid CardId
+    Guid CardId,
+    Guid RequesterId
 ) : IRequest<Result>;

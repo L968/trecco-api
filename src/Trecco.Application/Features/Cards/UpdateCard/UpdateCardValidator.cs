@@ -17,5 +17,8 @@ internal sealed class UpdateCardValidator : AbstractValidator<UpdateCardCommand>
 
         RuleFor(c => c.Description)
             .MaximumLength(1000);
+
+        RuleFor(c => c.RequesterId)
+            .NotEmpty();
     }
 }

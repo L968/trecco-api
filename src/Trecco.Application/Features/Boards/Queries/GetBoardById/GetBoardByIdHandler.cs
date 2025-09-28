@@ -9,23 +9,18 @@ internal sealed class GetBoardByIdHandler(
 {
     public async Task<Result<GetBoardByIdResponse>> Handle(GetBoardByIdQuery request, CancellationToken cancellationToken)
     {
-        if (request.UserId is null)
-        {
-            return Result.Failure(BoardErrors.NotAuthorized);
-        }
-
         Board? board = await boardRepository.GetByIdAsync(request.BoardId, cancellationToken);
         if (board is null)
         {
             return Result.Failure(BoardErrors.NotFound(request.BoardId));
         }
 
-        if (!board.CanAccess(request.UserId.Value))
+        if (!board.HasAccess(request.RequesterId))
         {
             return Result.Failure(BoardErrors.NotAuthorized);
         }
 
-        logger.LogDebug("Fetched board {@Board} for user {UserId}", board, request.UserId);
+        logger.LogDebug("Fetched board {@Board} for user {UserId}", board, request.RequesterId);
 
         var response = new GetBoardByIdResponse(
             Id: board.Id,

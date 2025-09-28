@@ -4,7 +4,14 @@ internal sealed class CreateListValidator : AbstractValidator<CreateListCommand>
 {
     public CreateListValidator()
     {
-        RuleFor(l => l.BoardId).NotEmpty();
-        RuleFor(l => l.Name).NotEmpty().MinimumLength(1);
+        RuleFor(l => l.BoardId)
+            .NotEmpty();
+
+        RuleFor(l => l.Name)
+            .NotEmpty()
+            .MinimumLength(1);
+
+        RuleFor(l => l.RequesterId)
+            .NotEmpty();
     }
 }

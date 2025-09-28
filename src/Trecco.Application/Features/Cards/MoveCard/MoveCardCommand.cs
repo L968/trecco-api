@@ -4,5 +4,6 @@ public sealed record MoveCardCommand(
     Guid BoardId,
     Guid CardId,
     Guid TargetListId,
-    int TargetPosition
+    int TargetPosition,
+    Guid RequesterId
 ) : IRequest<Result>;

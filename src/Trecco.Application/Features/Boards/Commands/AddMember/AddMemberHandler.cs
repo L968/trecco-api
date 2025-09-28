@@ -10,24 +10,26 @@ internal sealed class AddMemberHandler(
     public async Task<Result> Handle(AddMemberCommand request, CancellationToken cancellationToken)
     {
         Board? board = await boardRepository.GetByIdAsync(request.BoardId, cancellationToken);
-
         if (board is null)
         {
-            logger.LogWarning("Board {BoardId} not found when adding user {UserId}", request.BoardId, request.UserId);
             return Result.Failure(BoardErrors.NotFound(request.BoardId));
         }
 
-        if (board.MemberIds.Contains(request.UserId))
+        if (!board.HasAccess(request.RequesterId))
         {
-            logger.LogWarning("User {UserId} is already a member of Board {BoardId}", request.UserId, request.BoardId);
+            return Result.Failure(BoardErrors.NotAuthorized);
+        }
+
+        if (board.MemberIds.Contains(request.MemberId))
+        {
             return Result.Failure(BoardErrors.AlreadyMember);
         }
 
-        board.AddMember(request.UserId);
+        board.AddMember(request.MemberId);
 
         await boardRepository.UpdateAsync(board, cancellationToken);
 
-        logger.LogDebug("User {UserId} added to Board {BoardId}", request.UserId, request.BoardId);
+        logger.LogDebug("User {UserId} added to Board {BoardId}", request.MemberId, request.BoardId);
 
         return Result.Success();
     }

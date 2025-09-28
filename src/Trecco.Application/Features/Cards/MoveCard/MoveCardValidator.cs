@@ -15,5 +15,8 @@ internal sealed class MoveCardValidator : AbstractValidator<MoveCardCommand>
 
         RuleFor(c => c.TargetPosition)
             .GreaterThanOrEqualTo(0);
+
+        RuleFor(c => c.RequesterId)
+            .NotEmpty();
     }
 }

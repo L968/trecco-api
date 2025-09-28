@@ -1,6 +1,6 @@
 ﻿using MongoDB.Driver;
 using Trecco.Application.Domain.Boards;
-using Trecco.Application.Features.Boards.Queries.GetBoardsByOwner;
+using Trecco.Application.Features.Boards.Queries.GetMyBoards;
 
 namespace Trecco.Application.Infrastructure.Repositories;
 
@@ -13,10 +13,10 @@ internal sealed class BoardRepository : IBoardRepository
         _boards = database.GetCollection<Board>("Boards");
     }
 
-    public async Task<IEnumerable<GetBoardsByOwnerResponse>> GetByOwnerAsync(Guid ownerUserId, CancellationToken cancellationToken) =>
+    public async Task<IEnumerable<GetMyBoardsResponse>> GetByOwnerAsync(Guid ownerUserId, CancellationToken cancellationToken) =>
         await _boards
             .Find(b => b.OwnerUserId == ownerUserId)
-            .Project(b => new GetBoardsByOwnerResponse(
+            .Project(b => new GetMyBoardsResponse(
                 b.Id,
                 b.Name,
                 b.OwnerUserId

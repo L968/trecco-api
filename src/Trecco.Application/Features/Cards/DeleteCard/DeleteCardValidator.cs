@@ -9,5 +9,8 @@ internal sealed class DeleteCardValidator : AbstractValidator<DeleteCardCommand>
 
         RuleFor(c => c.CardId)
             .NotEmpty();
+
+        RuleFor(c => c.RequesterId)
+            .NotEmpty();
     }
 }

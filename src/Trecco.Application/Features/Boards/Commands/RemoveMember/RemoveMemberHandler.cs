@@ -15,6 +15,11 @@ internal sealed class RemoveMemberHandler(
             return Result.Failure(BoardErrors.NotFound(request.BoardId));
         }
 
+        if (!board.HasAccess(request.RequesterId))
+        {
+            return Result.Failure(BoardErrors.NotAuthorized);
+        }
+
         board.RemoveMember(request.UserId);
         await boardRepository.UpdateAsync(board, cancellationToken);
 

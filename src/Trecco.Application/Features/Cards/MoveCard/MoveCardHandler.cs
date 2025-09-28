@@ -17,6 +17,11 @@ internal sealed class MoveCardHandler(
             return Result.Failure(BoardErrors.NotFound(request.BoardId));
         }
 
+        if (!board.HasAccess(request.RequesterId))
+        {
+            return Result.Failure(BoardErrors.NotAuthorized);
+        }
+
         Result moveResult = board.MoveCard(request.CardId, request.TargetListId, request.TargetPosition);
         if (moveResult.IsFailure)
         {

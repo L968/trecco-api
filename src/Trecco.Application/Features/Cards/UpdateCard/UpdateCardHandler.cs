@@ -16,6 +16,11 @@ internal sealed class UpdateCardHandler(
             return Result.Failure(BoardErrors.NotFound(request.BoardId));
         }
 
+        if (!board.HasAccess(request.RequesterId))
+        {
+            return Result.Failure(BoardErrors.NotAuthorized);
+        }
+
         Card? card = board.GetCardById(request.CardId);
         if (card is null)
         {

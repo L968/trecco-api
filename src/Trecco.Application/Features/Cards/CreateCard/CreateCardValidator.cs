@@ -17,5 +17,8 @@ internal sealed class CreateCardValidator : AbstractValidator<CreateCardCommand>
 
         RuleFor(c => c.Description)
             .MaximumLength(1000);
+
+        RuleFor(c => c.RequesterId)
+            .NotEmpty();
     }
 }

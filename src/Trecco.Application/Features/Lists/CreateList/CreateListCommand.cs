@@ -2,5 +2,6 @@
 
 public sealed record CreateListCommand(
     Guid BoardId,
-    string Name
-) : IRequest<Result<CreateListResponse>>;
+    string Name,
+    Guid RequesterId
+) : IRequest<Result>;

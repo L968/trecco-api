@@ -2,5 +2,5 @@
 
 public sealed record GetBoardByIdQuery(
     Guid BoardId,
-    Guid? UserId
+    Guid RequesterId
 ) : IRequest<Result<GetBoardByIdResponse>>;

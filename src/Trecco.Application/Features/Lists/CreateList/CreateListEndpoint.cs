@@ -14,12 +14,9 @@ internal sealed class CreateListEndpoint : IEndpoint
                 CancellationToken cancellationToken) =>
             {
                 var command = new CreateListCommand(boardId, request.Name);
-                Result<CreateListResponse> result = await sender.Send(command, cancellationToken);
+                Result result = await sender.Send(command, cancellationToken);
 
-                return result.Match(
-                    onSuccess: response => Results.Created($"/boards/{boardId}/lists/{response.Id}", response),
-                    onFailure: ApiResults.Problem
-                );
+                return result.Match(Results.NoContent, ApiResults.Problem);
             })
         .WithTags(Tags.Lists);
     }

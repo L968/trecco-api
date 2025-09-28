@@ -1,4 +1,5 @@
-﻿using Trecco.Application.Common.Endpoints;
+﻿using Microsoft.AspNetCore.Mvc;
+using Trecco.Application.Common.Endpoints;
 
 namespace Trecco.Application.Features.Boards.Commands.AddMember;
 
@@ -10,14 +11,20 @@ internal sealed class AddMemberEndpoint : IEndpoint
             async (
                 Guid boardId,
                 AddMemberRequest request,
+                [FromHeader(Name = "X-User-Id")] Guid? requesterId,
                 ISender sender,
                 CancellationToken cancellationToken) =>
             {
-                var command = new AddMemberCommand(boardId, request.UserId);
+                if (requesterId is null)
+                {
+                    return Results.Forbid();
+                }
+
+                var command = new AddMemberCommand(boardId, request.UserId, requesterId.Value);
 
                 Result result = await sender.Send(command, cancellationToken);
 
-                return result.Match(Results.NoContent,ApiResults.Problem);
+                return result.Match(Results.NoContent, ApiResults.Problem);
             })
         .WithTags(Tags.Boards);
     }

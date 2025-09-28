@@ -4,5 +4,6 @@ public sealed record CreateCardCommand(
     Guid BoardId,
     Guid ListId,
     string Title,
-    string Description
+    string Description,
+    Guid RequesterId
 ) : IRequest<Result>;

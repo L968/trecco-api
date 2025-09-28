@@ -1,4 +1,5 @@
-﻿using Trecco.Application.Common.Endpoints;
+﻿using Microsoft.AspNetCore.Mvc;
+using Trecco.Application.Common.Endpoints;
 
 namespace Trecco.Application.Features.Cards.MoveCard;
 
@@ -11,19 +12,26 @@ internal sealed class MoveCardEndpoint : IEndpoint
                 Guid boardId,
                 Guid cardId,
                 MoveCardRequest request,
+                [FromHeader(Name = "X-User-Id")] Guid? requesterId,
                 ISender sender,
                 CancellationToken cancellationToken) =>
             {
+                if (requesterId is null)
+                {
+                    return Results.Forbid();
+                }
+
                 var command = new MoveCardCommand(
                     boardId,
                     cardId,
                     request.TargetListId,
-                    request.TargetPosition
+                    request.TargetPosition,
+                    requesterId.Value
                 );
 
                 Result result = await sender.Send(command, cancellationToken);
 
-                return result.Match(Results.NoContent,ApiResults.Problem);
+                return result.Match(Results.NoContent, ApiResults.Problem);
             })
         .WithTags(Tags.Cards);
     }

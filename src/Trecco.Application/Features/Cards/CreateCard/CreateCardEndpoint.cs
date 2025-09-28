@@ -1,4 +1,4 @@
-﻿using MediatR;
+﻿using Microsoft.AspNetCore.Mvc;
 using Trecco.Application.Common.Endpoints;
 
 namespace Trecco.Application.Features.Cards.CreateCard;
@@ -12,14 +12,21 @@ internal sealed class CreateCardEndpoint : IEndpoint
                 Guid boardId,
                 Guid listId,
                 CreateCardRequest request,
+                [FromHeader(Name = "X-User-Id")] Guid? requesterId,
                 ISender sender,
                 CancellationToken cancellationToken) =>
             {
+                if (requesterId is null)
+                {
+                    return Results.Forbid();
+                }
+
                 var command = new CreateCardCommand(
                     boardId,
                     listId,
                     request.Title,
-                    request.Description
+                    request.Description,
+                    requesterId.Value
                 );
 
                 Result result = await sender.Send(command, cancellationToken);

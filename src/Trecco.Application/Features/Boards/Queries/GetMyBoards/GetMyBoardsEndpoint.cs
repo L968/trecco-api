@@ -1,16 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Trecco.Application.Common.Endpoints;
 
-namespace Trecco.Application.Features.Boards.Commands.RemoveMember;
+namespace Trecco.Application.Features.Boards.Queries.GetMyBoards;
 
-internal sealed class RemoveMemberEndpoint : IEndpoint
+internal sealed class GetMyBoardsEndpoint : IEndpoint
 {
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapDelete("boards/{boardId:Guid}/members/{userId:Guid}",
+        app.MapGet("boards/me",
             async (
-                Guid boardId,
-                Guid userId,
                 [FromHeader(Name = "X-User-Id")] Guid? requesterId,
                 ISender sender,
                 CancellationToken cancellationToken) =>
@@ -20,11 +18,9 @@ internal sealed class RemoveMemberEndpoint : IEndpoint
                     return Results.Forbid();
                 }
 
-                var command = new RemoveMemberCommand(boardId, userId, requesterId.Value);
-
-                Result result = await sender.Send(command, cancellationToken);
-
-                return result.Match(Results.NoContent, ApiResults.Problem);
+                var query = new GetMyBoardsQuery(requesterId.Value);
+                IEnumerable<GetMyBoardsResponse> boards = await sender.Send(query, cancellationToken);
+                return Results.Ok(boards);
             })
         .WithTags(Tags.Boards);
     }

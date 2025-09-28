@@ -4,5 +4,6 @@ public sealed record UpdateCardCommand(
     Guid BoardId,
     Guid CardId,
     string Title,
-    string Description
+    string Description,
+    Guid RequesterId
 ) : IRequest<Result>;

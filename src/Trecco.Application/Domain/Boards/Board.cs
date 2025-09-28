@@ -74,7 +74,7 @@ public sealed class Board : Entity
         }
     }
 
-    public bool CanAccess(Guid userId)
+    public bool HasAccess(Guid userId)
     {
         return OwnerUserId == userId || _memberIds.Contains(userId);
     }

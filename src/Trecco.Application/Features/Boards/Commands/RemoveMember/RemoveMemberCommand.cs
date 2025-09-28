@@ -2,5 +2,6 @@
 
 public sealed record RemoveMemberCommand(
     Guid BoardId,
-    Guid UserId
+    Guid UserId,
+    Guid RequesterId
 ) : IRequest<Result>;

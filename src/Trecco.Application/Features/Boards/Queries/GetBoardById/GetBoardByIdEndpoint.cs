@@ -14,7 +14,12 @@ internal sealed class GetBoardByIdEndpoint : IEndpoint
                 ISender sender,
                 CancellationToken cancellationToken) =>
             {
-                var query = new GetBoardByIdQuery(boardId, userId);
+                if (userId is null)
+                {
+                    return Results.Forbid();
+                }
+
+                var query = new GetBoardByIdQuery(boardId, userId.Value);
                 Result<GetBoardByIdResponse> result = await sender.Send(query, cancellationToken);
 
                 return result.Match(

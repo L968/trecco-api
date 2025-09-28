@@ -2,5 +2,6 @@
 
 public sealed record AddMemberCommand(
     Guid BoardId,
-    Guid UserId
+    Guid MemberId,
+    Guid RequesterId
 ) : IRequest<Result>;
