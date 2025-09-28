@@ -82,6 +82,12 @@ public static class ApiResults
         return new Dictionary<string, object?>
         {
             ["errors"] = validationError.Errors
+                .Select(e => new
+                {
+                    code = e.Code,
+                    description = e.Description
+                })
+                .ToList()
         };
     }
 }
