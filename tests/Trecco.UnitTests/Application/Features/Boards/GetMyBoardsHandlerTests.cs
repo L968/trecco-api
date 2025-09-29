@@ -45,9 +45,9 @@ public class GetMyBoardsHandlerTests
 
         var boards = new List<GetMyBoardsResponse>
         {
-            new(Guid.NewGuid(), "Board 1"),
-            new(Guid.NewGuid(), "Board 2"),
-            new(Guid.NewGuid(), "Board 3")
+            new(Guid.NewGuid(), "Board 1", 0),
+            new(Guid.NewGuid(), "Board 2", 0),
+            new(Guid.NewGuid(), "Board 3", 0)
         };
 
         _repositoryMock
@@ -76,7 +76,7 @@ public class GetMyBoardsHandlerTests
 
         var boards = new List<GetMyBoardsResponse>
         {
-            new(boardId, "Single Board")
+            new(boardId, "Single Board", 0)
         };
 
         _repositoryMock

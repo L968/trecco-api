@@ -1,23 +1,69 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using Trecco.Application.Domain.Boards;
 
 namespace Trecco.Application.Infrastructure.Hubs;
 
 public class BoardHub : Hub
 {
-    public async Task JoinBoard(Guid boardId)
+    private readonly IBoardRepository _boardRepository;
+    private readonly ILogger<BoardHub> _logger;
+
+    public BoardHub(IBoardRepository boardRepository, ILogger<BoardHub> logger)
     {
+        _boardRepository = boardRepository;
+        _logger = logger;
+    }
+
+    public override async Task OnConnectedAsync()
+    {
+        HttpContext? httpContext = Context.GetHttpContext();
+        if (httpContext == null)
+        {
+            _logger.LogWarning("Connection aborted: HttpContext is null (ConnectionId: {ConnectionId})", Context.ConnectionId);
+            Context.Abort();
+            return;
+        }
+
+        string userIdHeader = httpContext.Request.Query["userId"];
+        if (!Guid.TryParse(userIdHeader, out Guid userId))
+        {
+            _logger.LogWarning("Connection aborted: Invalid x-user-id header (ConnectionId: {ConnectionId})", Context.ConnectionId);
+            Context.Abort();
+            return;
+        }
+
+        string boardIdQuery = httpContext.Request.Query["boardId"];
+        if (!Guid.TryParse(boardIdQuery, out Guid boardId))
+        {
+            _logger.LogWarning("Connection aborted: Invalid boardId query (ConnectionId: {ConnectionId}, UserId: {UserId})", Context.ConnectionId, userId);
+            Context.Abort();
+            return;
+        }
+
+        CancellationToken cancellationToken = Context.ConnectionAborted;
+        Board? board = await _boardRepository.GetByIdAsync(boardId, cancellationToken);
+        if (board == null || !board.MemberIds.Contains(userId) && board.OwnerUserId != userId)
+        {
+            _logger.LogWarning("Connection aborted: User {UserId} is not member or owner of board {BoardId}", userId, boardId);
+            Context.Abort();
+            return;
+        }
+
         await Groups.AddToGroupAsync(Context.ConnectionId, boardId.ToString());
+        _logger.LogDebug("User {UserId} connected to board {BoardId} (ConnectionId: {ConnectionId})", userId, boardId, Context.ConnectionId);
+
+        await base.OnConnectedAsync();
+    }
+
+    public override async Task OnDisconnectedAsync(Exception? exception)
+    {
+        _logger.LogDebug("Connection disconnected (ConnectionId: {ConnectionId}, Exception: {Exception})", Context.ConnectionId, exception?.Message);
+        await base.OnDisconnectedAsync(exception);
     }
 
     public async Task LeaveBoard(Guid boardId)
     {
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, boardId.ToString());
-    }
-
-    public async Task CardMoved(Guid boardId, Guid cardId, Guid listId, int position)
-    {
-        await Clients
-            .Group(boardId.ToString())
-            .SendAsync("CardMoved", cardId, listId, position);
+        _logger.LogDebug("Connection {ConnectionId} left board {BoardId}", Context.ConnectionId, boardId);
     }
 }

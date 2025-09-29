@@ -3,6 +3,7 @@ using Trecco.Api.Extensions;
 using Trecco.Api.Middleware;
 using Trecco.Application;
 using Trecco.Application.Common.Endpoints;
+using Trecco.Application.Infrastructure.Hubs;
 using Trecco.Aspire.ServiceDefaults;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -28,7 +29,8 @@ builder.Services.AddCors(options =>
         corsPolicyBuilder
             .AllowAnyMethod()
             .AllowAnyHeader()
-            .AllowAnyOrigin();
+            .AllowCredentials()
+            .WithOrigins("http://localhost:5173");
     });
 });
 
@@ -41,6 +43,8 @@ app.UseSerilogRequestLogging();
 app.MapDefaultEndpoints();
 
 app.MapEndpoints();
+
+app.MapHub<BoardHub>("/hubs/board");
 
 if (app.Environment.IsDevelopment())
 {

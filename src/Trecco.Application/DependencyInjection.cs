@@ -2,7 +2,6 @@
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 using Trecco.Application.Common.Behaviors;
 using Trecco.Application.Common.Endpoints;
