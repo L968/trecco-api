@@ -9,7 +9,7 @@ internal sealed class GetMyBoardsHandler(
 {
     public async Task<IEnumerable<GetMyBoardsResponse>> Handle(GetMyBoardsQuery request, CancellationToken cancellationToken)
     {
-        IEnumerable<GetMyBoardsResponse> boards = await boardRepository.GetByOwnerAsync(request.OwnerUserId, cancellationToken);
+        IEnumerable<GetMyBoardsResponse> boards = await boardRepository.GetBoardsByUserAsync(request.OwnerUserId, cancellationToken);
 
         logger.LogDebug("Fetched {Count} boards for owner {OwnerUserId}", boards.Count(), request.OwnerUserId);
 

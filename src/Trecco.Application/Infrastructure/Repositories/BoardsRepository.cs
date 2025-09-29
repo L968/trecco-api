@@ -13,10 +13,15 @@ internal sealed class BoardRepository : IBoardRepository
         _boards = database.GetCollection<Board>("Boards");
     }
 
-    public async Task<IEnumerable<GetMyBoardsResponse>> GetByOwnerAsync(Guid ownerUserId, CancellationToken cancellationToken)
+    public async Task<IEnumerable<GetMyBoardsResponse>> GetBoardsByUserAsync(Guid userId, CancellationToken cancellationToken)
     {
+        FilterDefinition<Board> filter = Builders<Board>.Filter.Or(
+            Builders<Board>.Filter.Eq(b => b.OwnerUserId, userId),
+            Builders<Board>.Filter.AnyIn("MemberIds", [userId.ToString()])
+        );
+
         List<Board> boards = await _boards
-            .Find(b => b.OwnerUserId == ownerUserId)
+            .Find(filter)
             .ToListAsync(cancellationToken);
 
         return boards.Select(b => new GetMyBoardsResponse(
