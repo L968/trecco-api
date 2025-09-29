@@ -114,4 +114,28 @@ public class ApplicationTests : BaseTest
             .GetResult()
             .ShouldBeSuccessful();
     }
+
+    [Fact]
+    public void DomainEventHandler_Should_NotBePublic()
+    {
+        Types.InAssembly(ApplicationAssembly)
+            .That()
+            .ImplementInterface(typeof(INotificationHandler<>))
+            .Should()
+            .NotBePublic()
+            .GetResult()
+            .ShouldBeSuccessful();
+    }
+
+    [Fact]
+    public void DomainEventHandler_Should_BeSealed()
+    {
+        Types.InAssembly(ApplicationAssembly)
+            .That()
+            .ImplementInterface(typeof(INotificationHandler<>))
+            .Should()
+            .BeSealed()
+            .GetResult()
+            .ShouldBeSuccessful();
+    }
 }
