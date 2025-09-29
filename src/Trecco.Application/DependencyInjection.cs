@@ -6,6 +6,7 @@ using MongoDB.Driver;
 using Trecco.Application.Common.Behaviors;
 using Trecco.Application.Common.Endpoints;
 using Trecco.Application.Common.Extensions;
+using Trecco.Application.Domain.BoardActionLogs;
 using Trecco.Application.Domain.Boards;
 using Trecco.Application.Infrastructure;
 using Trecco.Application.Infrastructure.Repositories;
@@ -46,6 +47,7 @@ public static class DependencyInjection
         });
 
         services.AddSingleton<IBoardRepository, BoardRepository>();
+        services.AddSingleton<IBoardActionLogRepository, BoardActionLogRepository>();
 
         services.AddEndpoints(typeof(DependencyInjection).Assembly);
 

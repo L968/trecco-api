@@ -20,7 +20,7 @@ internal sealed class GetBoardByIdHandler(
             return Result.Failure(BoardErrors.NotAuthorized);
         }
 
-        logger.LogDebug("Fetched board {@Board} for user {UserId}", board, request.RequesterId);
+        logger.LogDebug("Fetched board {BoardId} for user {UserId}", board.Id, request.RequesterId);
 
         var response = new GetBoardByIdResponse(
             Id: board.Id,

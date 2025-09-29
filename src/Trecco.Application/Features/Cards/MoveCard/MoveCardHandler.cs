@@ -22,7 +22,7 @@ internal sealed class MoveCardHandler(
             return Result.Failure(BoardErrors.NotAuthorized);
         }
 
-        Result moveResult = board.MoveCard(request.CardId, request.TargetListId, request.TargetPosition);
+        Result moveResult = board.MoveCard(request.CardId, request.TargetListId, request.TargetPosition, request.RequesterId);
         if (moveResult.IsFailure)
         {
             return moveResult;

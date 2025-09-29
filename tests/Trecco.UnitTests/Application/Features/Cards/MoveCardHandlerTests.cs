@@ -50,7 +50,7 @@ public class MoveCardHandlerTests
         var nonExistentCardId = Guid.NewGuid();
 
         // Act
-        Result result = board.MoveCard(nonExistentCardId, targetList.Id, 0);
+        Result result = board.MoveCard(nonExistentCardId, targetList.Id, 0, Guid.NewGuid());
 
         // Assert
         Assert.True(result.IsFailure);
@@ -67,7 +67,7 @@ public class MoveCardHandlerTests
         var nonExistentListId = Guid.NewGuid();
 
         // Act
-        Result result = board.MoveCard(card.Id, nonExistentListId, 0);
+        Result result = board.MoveCard(card.Id, nonExistentListId, 0, Guid.NewGuid());
 
         // Assert
         Assert.True(result.IsFailure);

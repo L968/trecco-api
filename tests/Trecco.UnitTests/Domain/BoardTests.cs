@@ -277,7 +277,7 @@ public class BoardTests
         Card card = sourceList.AddCard("Task", "Desc");
 
         // Act
-        Result result = board.MoveCard(card.Id, targetList.Id, 0);
+        Result result = board.MoveCard(card.Id, targetList.Id, 0, Guid.NewGuid());
 
         // Assert
         Assert.True(result.IsSuccess);
@@ -298,7 +298,7 @@ public class BoardTests
         Card cardToMove = sourceList.AddCard("To Move", "Desc");
 
         // Act
-        Result result = board.MoveCard(cardToMove.Id, targetList.Id, 99);
+        Result result = board.MoveCard(cardToMove.Id, targetList.Id, 99, Guid.NewGuid());
 
         // Assert
         Assert.True(result.IsSuccess);
@@ -320,7 +320,7 @@ public class BoardTests
         Card cardToMove = sourceList.AddCard("To Move", "Desc");
 
         // Act
-        Result result = board.MoveCard(cardToMove.Id, targetList.Id, 1);
+        Result result = board.MoveCard(cardToMove.Id, targetList.Id, 1, Guid.NewGuid());
 
         // Assert
         Assert.True(result.IsSuccess);
@@ -343,7 +343,7 @@ public class BoardTests
         Card cardToMove = sourceList.AddCard("To Move", "Desc");
 
         // Act
-        Result result = board.MoveCard(cardToMove.Id, targetList.Id, 0);
+        Result result = board.MoveCard(cardToMove.Id, targetList.Id, 0, Guid.NewGuid());
 
         // Assert
         Assert.True(result.IsSuccess);
@@ -368,7 +368,7 @@ public class BoardTests
         Card cardToMove = sourceList.AddCard("To Move", "Desc");
 
         // Act
-        Result result = board.MoveCard(cardToMove.Id, targetList.Id, 1);
+        Result result = board.MoveCard(cardToMove.Id, targetList.Id, 1, Guid.NewGuid());
 
         // Assert
         Assert.True(result.IsSuccess);
@@ -393,7 +393,7 @@ public class BoardTests
         Card cardToMove = sourceList.AddCard("To Move", "Desc");
 
         // Act
-        Result result = board.MoveCard(cardToMove.Id, targetList.Id, 99);
+        Result result = board.MoveCard(cardToMove.Id, targetList.Id, 99, Guid.NewGuid());
 
         // Assert
         Assert.True(result.IsSuccess);

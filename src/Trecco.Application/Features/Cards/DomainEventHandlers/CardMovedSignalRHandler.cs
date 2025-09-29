@@ -4,12 +4,12 @@ using Trecco.Application.Infrastructure.Hubs;
 
 namespace Trecco.Application.Features.Cards.DomainEventHandlers;
 
-internal sealed class CardMovedEventHandler : INotificationHandler<CardMovedDomainEvent>
+internal sealed class CardMovedSignalRHandler : INotificationHandler<CardMovedDomainEvent>
 {
     private readonly IHubContext<BoardHub> _hubContext;
-    private readonly ILogger<CardMovedEventHandler> _logger;
+    private readonly ILogger<CardMovedSignalRHandler> _logger;
 
-    public CardMovedEventHandler(IHubContext<BoardHub> hubContext, ILogger<CardMovedEventHandler> logger)
+    public CardMovedSignalRHandler(IHubContext<BoardHub> hubContext, ILogger<CardMovedSignalRHandler> logger)
     {
         _hubContext = hubContext;
         _logger = logger;
