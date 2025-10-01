@@ -1,7 +1,6 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using Trecco.Application.Common.DomainEvents;
-using Trecco.Application.Domain.BoardActionLogs;
 using Trecco.Application.Domain.Cards;
 using Trecco.Application.Domain.Lists;
 
@@ -111,6 +110,7 @@ public sealed class Board : Entity
         _lists.Add(newList);
 
         UpdatedAt = DateTime.UtcNow;
+        AddDomainEvent(new ListAddedDomainEvent(Id, newList.Id, newList.Name));
         return newList;
     }
 
@@ -125,9 +125,9 @@ public sealed class Board : Entity
         }
     }
 
-    public Result MoveCard(Guid cardId, Guid targetListId, int targetPosition, Guid userId)
+    public Result MoveCard(Guid cardId, Guid targetListId, int targetPosition)
     {
-        List? sourceList = _lists.FirstOrDefault(l => l.Cards.Any(c => c.Id == cardId));
+        List? sourceList = GetListByCardId(cardId);
         if (sourceList is null)
         {
             return Result.Failure(CardErrors.NotFound(cardId));
@@ -145,8 +145,7 @@ public sealed class Board : Entity
         targetList.InsertCard(card, targetPosition);
 
         UpdatedAt = DateTime.UtcNow;
-        AddDomainEvent(new CardMovedDomainEvent(Id, cardId, targetListId, targetPosition));
-        AddDomainEvent(new BoardActionDomainEvent(Id, userId, $"User {userId} moved card '{card.Title}' to list '{targetList.Name}'"));
+        AddDomainEvent(new CardMovedDomainEvent(Id, cardId, card.Title, targetListId, targetList.Name, targetPosition));
 
         return Result.Success();
     }

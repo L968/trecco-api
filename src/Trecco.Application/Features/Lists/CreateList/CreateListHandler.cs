@@ -1,10 +1,12 @@
-﻿using Trecco.Application.Domain.Boards;
+﻿using Trecco.Application.Common.DomainEvents;
+using Trecco.Application.Domain.Boards;
 using Trecco.Application.Domain.Lists;
 
 namespace Trecco.Application.Features.Lists.CreateList;
 
 internal sealed class CreateListHandler(
     IBoardRepository boardRepository,
+    IDomainEventDispatcher domainEventDispatcher,
     ILogger<CreateListHandler> logger
 ) : IRequestHandler<CreateListCommand, Result>
 {
@@ -24,6 +26,8 @@ internal sealed class CreateListHandler(
         List list = board.AddList(request.Name);
 
         await boardRepository.UpdateAsync(board, cancellationToken);
+
+        await domainEventDispatcher.DispatchAsync(board, cancellationToken);
 
         logger.LogDebug("List {ListId} created in Board {BoardId}", list.Id, board.Id);
 

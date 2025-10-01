@@ -1,11 +1,11 @@
-﻿using Trecco.Application.Common.Extensions;
+﻿using Trecco.Application.Common.DomainEvents;
 using Trecco.Application.Domain.Boards;
 
 namespace Trecco.Application.Features.Cards.MoveCard;
 
 internal sealed class MoveCardHandler(
     IBoardRepository boardRepository,
-    IMediator mediator,
+    IDomainEventDispatcher domainEventDispatcher,
     ILogger<MoveCardHandler> logger
 ) : IRequestHandler<MoveCardCommand, Result>
 {
@@ -22,7 +22,7 @@ internal sealed class MoveCardHandler(
             return Result.Failure(BoardErrors.NotAuthorized);
         }
 
-        Result moveResult = board.MoveCard(request.CardId, request.TargetListId, request.TargetPosition, request.RequesterId);
+        Result moveResult = board.MoveCard(request.CardId, request.TargetListId, request.TargetPosition);
         if (moveResult.IsFailure)
         {
             return moveResult;
@@ -30,7 +30,7 @@ internal sealed class MoveCardHandler(
 
         await boardRepository.UpdateAsync(board, cancellationToken);
 
-        await mediator.DispatchDomainEventsAsync(board, cancellationToken);
+        await domainEventDispatcher.DispatchAsync(board, cancellationToken);
 
         logger.LogDebug(
             "Card {CardId} successfully moved to list {TargetListId} at position {TargetPosition} in board {BoardId}",

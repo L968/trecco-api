@@ -1,4 +1,5 @@
-﻿using Trecco.Application.Common.Results;
+﻿using Trecco.Application.Common.DomainEvents;
+using Trecco.Application.Common.Results;
 using Trecco.Application.Domain.Boards;
 using Trecco.Application.Features.Lists.CreateList;
 
@@ -7,14 +8,16 @@ namespace Trecco.UnitTests.Application.Features.Lists;
 public class CreateListHandlerTests
 {
     private readonly Mock<IBoardRepository> _repositoryMock;
+    private readonly Mock<IDomainEventDispatcher> _dispatcherMock;
     private readonly Mock<ILogger<CreateListHandler>> _loggerMock;
     private readonly CreateListHandler _handler;
 
     public CreateListHandlerTests()
     {
         _repositoryMock = new Mock<IBoardRepository>();
+        _dispatcherMock = new Mock<IDomainEventDispatcher>();
         _loggerMock = new Mock<ILogger<CreateListHandler>>();
-        _handler = new CreateListHandler(_repositoryMock.Object, _loggerMock.Object);
+        _handler = new CreateListHandler(_repositoryMock.Object, _dispatcherMock.Object, _loggerMock.Object);
     }
 
     [Fact]

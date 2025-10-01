@@ -1,4 +1,4 @@
-﻿using MediatR;
+﻿using Trecco.Application.Common.DomainEvents;
 using Trecco.Application.Common.Results;
 using Trecco.Application.Domain.Boards;
 using Trecco.Application.Domain.Cards;
@@ -10,16 +10,16 @@ namespace Trecco.UnitTests.Application.Features.Cards;
 public class MoveCardHandlerTests
 {
     private readonly Mock<IBoardRepository> _repositoryMock;
-    private readonly Mock<IMediator> _mediatorMock;
+    private readonly Mock<IDomainEventDispatcher> _dispatcherMock;
     private readonly Mock<ILogger<MoveCardHandler>> _loggerMock;
     private readonly MoveCardHandler _handler;
 
     public MoveCardHandlerTests()
     {
         _repositoryMock = new Mock<IBoardRepository>();
-        _mediatorMock = new Mock<IMediator>();
+        _dispatcherMock = new Mock<IDomainEventDispatcher>();
         _loggerMock = new Mock<ILogger<MoveCardHandler>>();
-        _handler = new MoveCardHandler(_repositoryMock.Object, _mediatorMock.Object, _loggerMock.Object);
+        _handler = new MoveCardHandler(_repositoryMock.Object, _dispatcherMock.Object, _loggerMock.Object);
     }
 
     [Fact]
@@ -38,7 +38,7 @@ public class MoveCardHandlerTests
         Assert.True(result.IsFailure);
         Assert.Equal(BoardErrors.NotFound(command.BoardId).Code, result.Error.Code);
         _repositoryMock.Verify(r => r.UpdateAsync(It.IsAny<Board>(), It.IsAny<CancellationToken>()), Times.Never);
-        _mediatorMock.Verify(m => m.Publish(It.IsAny<INotification>(), It.IsAny<CancellationToken>()), Times.Never);
+        _dispatcherMock.Verify(m => m.DispatchAsync(It.IsAny<Entity>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -50,7 +50,7 @@ public class MoveCardHandlerTests
         var nonExistentCardId = Guid.NewGuid();
 
         // Act
-        Result result = board.MoveCard(nonExistentCardId, targetList.Id, 0, Guid.NewGuid());
+        Result result = board.MoveCard(nonExistentCardId, targetList.Id, 0);
 
         // Assert
         Assert.True(result.IsFailure);
@@ -67,7 +67,7 @@ public class MoveCardHandlerTests
         var nonExistentListId = Guid.NewGuid();
 
         // Act
-        Result result = board.MoveCard(card.Id, nonExistentListId, 0, Guid.NewGuid());
+        Result result = board.MoveCard(card.Id, nonExistentListId, 0);
 
         // Assert
         Assert.True(result.IsFailure);
@@ -98,7 +98,7 @@ public class MoveCardHandlerTests
         Assert.True(result.IsFailure);
         Assert.Equal(BoardErrors.NotAuthorized.Code, result.Error.Code);
         _repositoryMock.Verify(r => r.UpdateAsync(It.IsAny<Board>(), It.IsAny<CancellationToken>()), Times.Never);
-        _mediatorMock.Verify(m => m.Publish(It.IsAny<INotification>(), It.IsAny<CancellationToken>()), Times.Never);
+        _dispatcherMock.Verify(m => m.DispatchAsync(It.IsAny<Entity>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -126,6 +126,6 @@ public class MoveCardHandlerTests
         Assert.Contains(targetList.Cards, c => c.Id == card.Id);
         Assert.Equal(0, card.Position);
         _repositoryMock.Verify(r => r.UpdateAsync(board, It.IsAny<CancellationToken>()), Times.Once);
-        _mediatorMock.Verify(m => m.Publish(It.IsAny<INotification>(), It.IsAny<CancellationToken>()), Times.AtLeastOnce);
+        _dispatcherMock.Verify(m => m.DispatchAsync(It.IsAny<Entity>(), It.IsAny<CancellationToken>()), Times.AtLeastOnce);
     }
 }

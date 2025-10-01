@@ -1,9 +1,12 @@
 ﻿using System.Globalization;
 using System.Reflection;
+using MediatR.NotificationPublishers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
+using Trecco.Application.Common.Authentication;
 using Trecco.Application.Common.Behaviors;
+using Trecco.Application.Common.DomainEvents;
 using Trecco.Application.Common.Endpoints;
 using Trecco.Application.Common.Extensions;
 using Trecco.Application.Domain.BoardActionLogs;
@@ -21,13 +24,20 @@ public static class DependencyInjection
 
         services.AddMediatR(config =>
         {
+            config.NotificationPublisher = new TaskWhenAllPublisher();
+            config.NotificationPublisherType = typeof(TaskWhenAllPublisher);
+
             config.RegisterServicesFromAssembly(assembly);
 
             config.AddOpenBehavior(typeof(PerformanceBehavior<,>));
+            config.AddOpenBehavior(typeof(UserContextBehavior<,>));
             config.AddOpenBehavior(typeof(ValidationPipelineBehavior<,>));
         });
 
         services.AddSignalR();
+        services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
+        services.AddSingleton<IUserContext, UserContext>();
+        services.AddHttpContextAccessor();
 
         services.AddValidatorsFromAssembly(assembly, includeInternalTypes: true);
         ValidatorOptions.Global.LanguageManager.Culture = CultureInfo.InvariantCulture;

@@ -1,10 +1,11 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using Trecco.Application.Common.DomainEvents;
 using Trecco.Application.Domain.Cards;
 
 namespace Trecco.Application.Domain.Lists;
 
-public sealed class List
+public sealed class List : Entity
 {
     [BsonId]
     [BsonRepresentation(BsonType.String)]
