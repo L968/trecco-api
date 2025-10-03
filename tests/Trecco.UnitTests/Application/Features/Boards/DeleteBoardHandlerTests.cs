@@ -78,6 +78,3 @@ public class DeleteBoardHandlerTests
         _loggerMock.VerifyLog(LogLevel.Information, Times.Once());
     }
 }
-
-
-

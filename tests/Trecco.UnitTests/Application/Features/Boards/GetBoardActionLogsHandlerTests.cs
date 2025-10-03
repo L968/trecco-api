@@ -95,6 +95,3 @@ public class GetBoardActionLogsHandlerTests
         _loggerMock.VerifyLog(LogLevel.Debug, Times.Once());
     }
 }
-
-
-

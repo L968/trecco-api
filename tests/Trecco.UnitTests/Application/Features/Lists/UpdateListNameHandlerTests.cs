@@ -87,6 +87,3 @@ public class UpdateListNameHandlerTests
         _loggerMock.VerifyLog(LogLevel.Information, Times.Once());
     }
 }
-
-
-

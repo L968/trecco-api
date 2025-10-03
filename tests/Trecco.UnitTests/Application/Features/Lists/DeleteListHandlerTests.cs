@@ -87,6 +87,3 @@ public class DeleteListHandlerTests
         _loggerMock.VerifyLog(LogLevel.Debug, Times.Once());
     }
 }
-
-
-
