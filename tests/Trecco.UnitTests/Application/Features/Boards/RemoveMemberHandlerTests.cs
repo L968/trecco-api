@@ -105,4 +105,49 @@ public sealed class RemoveMemberHandlerTests
         Assert.DoesNotContain(userId, board.MemberIds);
         _repositoryMock.Verify(r => r.UpdateAsync(board, It.IsAny<CancellationToken>()), Times.Once);
     }
+
+    [Fact]
+    public async Task Handle_ShouldReturnFailure_WhenOwnerTriesToRemoveOwner()
+    {
+        // Arrange
+        var ownerId = Guid.NewGuid();
+        var board = new Board("Test Board", ownerId);
+        var command = new RemoveMemberCommand(board.Id, ownerId, ownerId);
+
+        _repositoryMock
+            .Setup(r => r.GetByIdAsync(board.Id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(board);
+
+        // Act
+        Result result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        Assert.True(result.IsFailure);
+        Assert.Equal(BoardErrors.CannotRemoveOwner.Code, result.Error.Code);
+        _repositoryMock.Verify(r => r.UpdateAsync(It.IsAny<Board>(), It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task Handle_ShouldAllowSelfRemoval_ForMember()
+    {
+        // Arrange
+        var ownerId = Guid.NewGuid();
+        var memberId = Guid.NewGuid();
+        var board = new Board("Test Board", ownerId);
+        board.AddMember(memberId);
+
+        var command = new RemoveMemberCommand(board.Id, memberId, memberId);
+
+        _repositoryMock
+            .Setup(r => r.GetByIdAsync(board.Id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(board);
+
+        // Act
+        Result result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        Assert.True(result.IsSuccess);
+        Assert.DoesNotContain(memberId, board.MemberIds);
+        _repositoryMock.Verify(r => r.UpdateAsync(board, It.IsAny<CancellationToken>()), Times.Once);
+    }
 }

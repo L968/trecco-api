@@ -45,7 +45,8 @@ public class GetMyBoardsHandlerTests
     {
         new Board("Board 1", userId),
         new Board("Board 2", userId),
-        new Board("Board 3", userId)    };
+        new Board("Board 3", userId)
+    };
 
         _repositoryMock
             .Setup(r => r.GetByUserIdAsync(userId, It.IsAny<CancellationToken>()))

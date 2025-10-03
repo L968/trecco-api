@@ -139,7 +139,7 @@ public class GetBoardByIdHandlerTests
         Assert.Equal(board.Name, result.Value.Name);
         Assert.Equal(2, result.Value.Lists.Count);
 
-        // Verify first list
+        
         BoardListDto firstList = result.Value.Lists.First(l => l.Name == "To Do");
         Assert.Equal(list1.Id, firstList.Id);
         Assert.Equal(0, firstList.Position);
@@ -147,7 +147,7 @@ public class GetBoardByIdHandlerTests
         Assert.Contains(firstList.Cards, c => c.Title == "Task 1" && c.Description == "Description 1");
         Assert.Contains(firstList.Cards, c => c.Title == "Task 2" && c.Description == "Description 2");
 
-        // Verify second list
+        
         BoardListDto secondList = result.Value.Lists.First(l => l.Name == "Done");
         Assert.Equal(list2.Id, secondList.Id);
         Assert.Equal(1, secondList.Position);

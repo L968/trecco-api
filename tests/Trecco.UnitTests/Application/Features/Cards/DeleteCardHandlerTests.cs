@@ -102,4 +102,29 @@ public class DeleteCardHandlerTests
         Assert.True(result.IsSuccess);
         _repositoryMock.Verify(r => r.UpdateAsync(board, It.IsAny<CancellationToken>()), Times.Once);
     }
+
+    [Fact]
+    public async Task Handle_ShouldReturnSuccess_WhenMemberDeletesCard()
+    {
+        // Arrange
+        var ownerId = Guid.NewGuid();
+        var memberId = Guid.NewGuid();
+        var board = new Board("Test Board", ownerId);
+        board.AddMember(memberId);
+        List list = board.AddList("To Do");
+        Card card = list.AddCard("Title", "Desc");
+        var command = new DeleteCardCommand(board.Id, card.Id, memberId);
+
+        _repositoryMock
+            .Setup(r => r.GetByIdAsync(board.Id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(board);
+
+        // Act
+        Result result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        Assert.True(result.IsSuccess);
+        Assert.DoesNotContain(list.Cards, c => c.Id == card.Id);
+        _repositoryMock.Verify(r => r.UpdateAsync(board, It.IsAny<CancellationToken>()), Times.Once);
+    }
 }

@@ -127,4 +127,53 @@ public class MoveCardHandlerTests
         _repositoryMock.Verify(r => r.UpdateAsync(board, It.IsAny<CancellationToken>()), Times.Once);
         _dispatcherMock.Verify(m => m.DispatchAsync(It.IsAny<Entity>(), It.IsAny<CancellationToken>()), Times.AtLeastOnce);
     }
+
+    [Fact]
+    public async Task Handle_ShouldReorderWithinSameList_WhenTargetIsSameList()
+    {
+        // Arrange
+        var ownerId = Guid.NewGuid();
+        var board = new Board("Test Board", ownerId);
+        List list = board.AddList("Backlog");
+        Card cardA = list.AddCard("A", "");
+        Card cardB = list.AddCard("B", "");
+        Card cardC = list.AddCard("C", "");
+
+        var command = new MoveCardCommand(board.Id, cardC.Id, list.Id, 1, ownerId);
+        _repositoryMock.Setup(r => r.GetByIdAsync(board.Id, It.IsAny<CancellationToken>())).ReturnsAsync(board);
+
+        // Act
+        Result result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        Assert.True(result.IsSuccess);
+        Assert.Equal(0, cardA.Position);
+        Assert.Equal(2, cardB.Position);
+        Assert.Equal(1, cardC.Position);
+        _repositoryMock.Verify(r => r.UpdateAsync(board, It.IsAny<CancellationToken>()), Times.Once);
+        _dispatcherMock.Verify(m => m.DispatchAsync(It.IsAny<Entity>(), It.IsAny<CancellationToken>()), Times.AtLeastOnce);
+    }
+
+    [Fact]
+    public async Task Handle_ShouldClampPosition_WhenTargetPositionGreaterThanCount()
+    {
+        // Arrange
+        var ownerId = Guid.NewGuid();
+        var board = new Board("Test Board", ownerId);
+        List list = board.AddList("Backlog");
+        Card cardA = list.AddCard("A", "");
+        Card cardB = list.AddCard("B", "");
+
+        var command = new MoveCardCommand(board.Id, cardA.Id, list.Id, 99, ownerId);
+        _repositoryMock.Setup(r => r.GetByIdAsync(board.Id, It.IsAny<CancellationToken>())).ReturnsAsync(board);
+
+        // Act
+        Result result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        Assert.True(result.IsSuccess);
+        Assert.Equal(1, cardA.Position);
+        Assert.Equal(0, cardB.Position);
+        _repositoryMock.Verify(r => r.UpdateAsync(board, It.IsAny<CancellationToken>()), Times.Once);
+    }
 }

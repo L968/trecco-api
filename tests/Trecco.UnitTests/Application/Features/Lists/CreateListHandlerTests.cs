@@ -81,4 +81,29 @@ public class CreateListHandlerTests
         Assert.True(result.IsSuccess);
         _repositoryMock.Verify(r => r.UpdateAsync(board, It.IsAny<CancellationToken>()), Times.Once);
     }
+
+    [Fact]
+    public async Task Handle_ShouldReturnSuccess_WhenMemberCreatesList()
+    {
+        // Arrange
+        var ownerId = Guid.NewGuid();
+        var memberId = Guid.NewGuid();
+        var boardId = Guid.NewGuid();
+        var board = new Board("Test Board", ownerId);
+        board.AddMember(memberId);
+
+        _repositoryMock
+            .Setup(r => r.GetByIdAsync(boardId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(board);
+
+        var command = new CreateListCommand(boardId, "New List", memberId);
+
+        // Act
+        Result result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        Assert.True(result.IsSuccess);
+        _repositoryMock.Verify(r => r.UpdateAsync(board, It.IsAny<CancellationToken>()), Times.Once);
+        _dispatcherMock.Verify(d => d.DispatchAsync(board, It.IsAny<CancellationToken>()), Times.Once);
+    }
 }
