@@ -1,4 +1,5 @@
-﻿using Trecco.Application.Common.Results;
+﻿using Trecco.Application.Common.DomainEvents;
+using Trecco.Application.Common.Results;
 using Trecco.Application.Domain.Boards;
 using Trecco.Application.Features.Boards.Commands.AddMember;
 
@@ -7,6 +8,7 @@ namespace Trecco.UnitTests.Application.Features.Boards;
 public class AddMemberHandlerTests
 {
     private readonly Mock<IBoardRepository> _repositoryMock;
+    private readonly Mock<IDomainEventDispatcher> _dispatcherMock;
     private readonly Mock<ILogger<AddMemberHandler>> _loggerMock;
     private readonly AddMemberHandler _handler;
 
@@ -14,7 +16,8 @@ public class AddMemberHandlerTests
     {
         _repositoryMock = new Mock<IBoardRepository>();
         _loggerMock = new Mock<ILogger<AddMemberHandler>>();
-        _handler = new AddMemberHandler(_repositoryMock.Object, _loggerMock.Object);
+        _dispatcherMock = new Mock<IDomainEventDispatcher>();
+        _handler = new AddMemberHandler(_repositoryMock.Object, _dispatcherMock.Object, _loggerMock.Object);
     }
 
     [Fact]

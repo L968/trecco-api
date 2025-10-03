@@ -5,7 +5,7 @@ namespace Trecco.UnitTests.Domain;
 public class CardTests
 {
     [Fact]
-    public void Should_CreateCard_WithValidValues()
+    public void Constructor_ShouldCreateCard_WithValidValues()
     {
         // Arrange
         string title = "Test Card";
@@ -22,7 +22,7 @@ public class CardTests
     }
 
     [Fact]
-    public void Should_CreateCard_WithPosition()
+    public void Constructor_ShouldCreateCard_WithSpecifiedPosition()
     {
         // Arrange
         string title = "Test Card";
@@ -39,6 +39,37 @@ public class CardTests
     }
 
     [Fact]
+    public void Constructor_ShouldAllowNullDescription()
+    {
+        // Arrange & Act
+        var card = new Card("Title", null!);
+
+        // Assert
+        Assert.Null(card.Description);
+    }
+
+    [Fact]
+    public void Constructor_ShouldSetCreatedByToCurrentTime()
+    {
+        // Arrange
+        DateTime beforeCreation = DateTime.UtcNow;
+
+        // Act
+        var card = new Card("Title", "Description");
+
+        // Assert
+        Assert.True(card.CreatedBy >= beforeCreation);
+        Assert.True(card.CreatedBy <= DateTime.UtcNow);
+    }
+
+    [Fact]
+    public void Constructor_ShouldThrow_WhenPositionIsNegative()
+    {
+        // Arrange & Act & Assert
+        Assert.Throws<ArgumentOutOfRangeException>(() => new Card("Title", "Desc", -1));
+    }
+
+    [Fact]
     public void SetPosition_ShouldUpdatePosition()
     {
         // Arrange
@@ -49,6 +80,29 @@ public class CardTests
 
         // Assert
         Assert.Equal(5, card.Position);
+    }
+
+    [Fact]
+    public void SetPosition_ShouldAllowZero()
+    {
+        // Arrange
+        var card = new Card("Title", "Desc", 5);
+
+        // Act
+        card.SetPosition(0);
+
+        // Assert
+        Assert.Equal(0, card.Position);
+    }
+
+    [Fact]
+    public void SetPosition_ShouldThrow_WhenNegative()
+    {
+        // Arrange
+        var card = new Card("Title", "Desc");
+
+        // Act & Assert
+        Assert.Throws<ArgumentOutOfRangeException>(() => card.SetPosition(-5));
     }
 
     [Fact]
@@ -65,31 +119,16 @@ public class CardTests
     }
 
     [Fact]
-    public void UpdateDescription_ShouldChangeDescription()
+    public void UpdateTitle_ShouldAllowSameValue()
     {
         // Arrange
-        var card = new Card("Title", "Old Description");
+        var card = new Card("Same Title", "Desc");
 
         // Act
-        card.UpdateDescription("New Description");
+        card.UpdateTitle("Same Title");
 
         // Assert
-        Assert.Equal("New Description", card.Description);
-    }
-
-    [Fact]
-    public void Constructor_ShouldThrowArgumentException_WhenTitleIsEmpty()
-    {
-        // Arrange & Act & Assert
-        Assert.Throws<ArgumentException>(() => new Card("", "Description"));
-        Assert.Throws<ArgumentException>(() => new Card("   ", "Description"));
-    }
-
-    [Fact]
-    public void Constructor_ShouldThrowArgumentException_WhenTitleIsNull()
-    {
-        // Arrange & Act & Assert
-        Assert.Throws<ArgumentException>(() => new Card(null!, "Description"));
+        Assert.Equal("Same Title", card.Title);
     }
 
     [Fact]
@@ -114,17 +153,30 @@ public class CardTests
     }
 
     [Fact]
-    public void Constructor_ShouldSetCreatedByToCurrentTime()
+    public void UpdateDescription_ShouldChangeDescription()
     {
         // Arrange
-        DateTime beforeCreation = DateTime.UtcNow;
+        var card = new Card("Title", "Old Description");
 
         // Act
-        var card = new Card("Title", "Description");
+        card.UpdateDescription("New Description");
 
         // Assert
-        Assert.True(card.CreatedBy >= beforeCreation);
-        Assert.True(card.CreatedBy <= DateTime.UtcNow);
+        Assert.Equal("New Description", card.Description);
+    }
+
+    [Fact]
+    public void UpdateDescription_ShouldOverridePreviousValues()
+    {
+        // Arrange
+        var card = new Card("Title", "Desc1");
+
+        // Act
+        card.UpdateDescription("Desc2");
+        card.UpdateDescription("Desc3");
+
+        // Assert
+        Assert.Equal("Desc3", card.Description);
     }
 
     [Fact]
@@ -151,5 +203,20 @@ public class CardTests
 
         // Assert
         Assert.Null(card.Description);
+    }
+
+    [Fact]
+    public void Constructor_ShouldThrowArgumentException_WhenTitleIsEmpty()
+    {
+        // Arrange & Act & Assert
+        Assert.Throws<ArgumentException>(() => new Card("", "Description"));
+        Assert.Throws<ArgumentException>(() => new Card("   ", "Description"));
+    }
+
+    [Fact]
+    public void Constructor_ShouldThrowArgumentException_WhenTitleIsNull()
+    {
+        // Arrange & Act & Assert
+        Assert.Throws<ArgumentException>(() => new Card(null!, "Description"));
     }
 }

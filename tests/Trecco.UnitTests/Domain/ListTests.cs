@@ -106,6 +106,21 @@ public class ListTests
     }
 
     [Fact]
+    public void AddCard_ShouldIncrementPosition_WhenCardsAlreadyExist()
+    {
+        // Arrange
+        var list = new List("Test", 0);
+        Card firstCard = list.AddCard("First", "Desc");
+
+        // Act
+        Card secondCard = list.AddCard("Second", "Desc");
+
+        // Assert
+        Assert.Equal(0, firstCard.Position);
+        Assert.Equal(1, secondCard.Position);
+    }
+
+    [Fact]
     public void AddCard_ShouldThrowArgumentException_WhenTitleIsEmpty()
     {
         // Arrange
@@ -114,6 +129,55 @@ public class ListTests
         // Act & Assert
         Assert.Throws<ArgumentException>(() => list.AddCard("", "Description"));
         Assert.Throws<ArgumentException>(() => list.AddCard("   ", "Description"));
+    }
+
+    [Fact]
+    public void AddCard_ShouldThrowArgumentException_WhenTitleIsNull()
+    {
+        // Arrange
+        var list = new List("Test", 0);
+
+        // Act & Assert
+        Assert.Throws<ArgumentException>(() => list.AddCard(null!, "Description"));
+    }
+
+    [Fact]
+    public void InsertCard_ShouldShiftPositionsCorrectly_WhenInsertingAtBeginning()
+    {
+        // Arrange
+        var list = new List("Test", 0);
+        Card card1 = list.AddCard("Card 1", "Desc");
+        Card card2 = list.AddCard("Card 2", "Desc");
+        var newCard = new Card("Inserted", "Desc");
+
+        // Act
+        list.InsertCard(newCard, 0);
+
+        // Assert
+        Assert.Equal(3, list.Cards.Count);
+        Assert.Equal(0, newCard.Position);
+        Assert.Equal(1, card1.Position);
+        Assert.Equal(2, card2.Position);
+    }
+
+    [Fact]
+    public void InsertCard_ShouldNotShiftPositionsBelowInsertedPosition()
+    {
+        // Arrange
+        var list = new List("Test", 0);
+        Card card1 = list.AddCard("Card 1", "Desc");
+        Card card2 = list.AddCard("Card 2", "Desc");
+        Card card3 = list.AddCard("Card 3", "Desc");
+        var newCard = new Card("Inserted", "Desc");
+
+        // Act
+        list.InsertCard(newCard, 1);
+
+        // Assert
+        Assert.Equal(0, card1.Position);
+        Assert.Equal(2, card2.Position);
+        Assert.Equal(3, card3.Position);
+        Assert.Equal(1, newCard.Position);
     }
 
     [Fact]
@@ -164,6 +228,23 @@ public class ListTests
         Assert.Equal(0, card1.Position);
         Assert.Equal(1, card2.Position);
         Assert.Equal(2, newCard.Position);
+        Assert.Equal(newCard, list.Cards.Last());
+    }
+
+    [Fact]
+    public void InsertCard_ShouldInsertAtEnd_WhenPositionEqualsListCount()
+    {
+        // Arrange
+        var list = new List("Test", 0);
+        list.AddCard("Card 1", "Desc");
+        list.AddCard("Card 2", "Desc");
+        var newCard = new Card("Inserted", "Desc");
+
+        // Act
+        list.InsertCard(newCard, list.Cards.Count);
+
+        // Assert
+        Assert.Equal(list.Cards.Count - 1, newCard.Position);
         Assert.Equal(newCard, list.Cards.Last());
     }
 

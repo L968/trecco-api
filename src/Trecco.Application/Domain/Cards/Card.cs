@@ -15,6 +15,11 @@ public sealed class Card
 
     public Card(string title, string description, int position = 0)
     {
+        if (position < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(position), "Position cannot be negative.");
+        }
+
         Id = Guid.CreateVersion7();
         Title = string.IsNullOrWhiteSpace(title) ? throw new ArgumentException("Title cannot be empty") : title;
         Description = description;
@@ -24,6 +29,11 @@ public sealed class Card
 
     public void SetPosition(int position)
     {
+        if (position < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(position), "Position cannot be negative.");
+        }
+
         Position = position;
     }
 

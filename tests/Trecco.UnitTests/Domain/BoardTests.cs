@@ -24,6 +24,13 @@ public class BoardTests
     }
 
     [Fact]
+    public void Constructor_ShouldThrowArgumentNullException_WhenNameIsNull()
+    {
+        // Arrange & Act & Assert
+        Assert.Throws<ArgumentNullException>(() => new Board(null!, Guid.NewGuid()));
+    }
+
+    [Fact]
     public void UpdateName_ShouldChangeNameAndUpdatedAt()
     {
         // Arrange
@@ -39,7 +46,18 @@ public class BoardTests
     }
 
     [Fact]
-    public void AddMember_ShouldAddUniqueMember()
+    public void UpdateName_ShouldThrowArgumentException_WhenNameIsEmptyOrWhitespace()
+    {
+        // Arrange
+        var board = new Board("Test", Guid.NewGuid());
+
+        // Act & Assert
+        Assert.Throws<ArgumentException>(() => board.UpdateName(""));
+        Assert.Throws<ArgumentException>(() => board.UpdateName("   "));
+    }
+
+    [Fact]
+    public void AddMember_ShouldAddUniqueMember_AndRaiseEvent()
     {
         // Arrange
         var board = new Board("Test", Guid.NewGuid());
@@ -52,6 +70,7 @@ public class BoardTests
         // Assert
         Assert.Single(board.MemberIds);
         Assert.Contains(userId, board.MemberIds);
+        Assert.Contains(board.DomainEvents, e => e.GetType().Name == "MemberAddedDomainEvent");
     }
 
     [Fact]
@@ -70,19 +89,82 @@ public class BoardTests
     }
 
     [Fact]
-    public void AddList_ShouldAddListWithCorrectPosition()
+    public void RemoveMember_ShouldNotThrow_WhenMemberNotFound()
     {
         // Arrange
         var board = new Board("Test", Guid.NewGuid());
 
         // Act
-        List list1 = board.AddList("List 1");
-        List list2 = board.AddList("List 2");
+        Exception ex = Record.Exception(() => board.RemoveMember(Guid.NewGuid()));
 
         // Assert
-        Assert.Equal(2, board.Lists.Count);
-        Assert.Equal(0, list1.Position);
-        Assert.Equal(1, list2.Position);
+        Assert.Null(ex);
+    }
+
+    [Fact]
+    public void CanRemoveMember_ShouldFail_WhenOwnerTriesToRemoveSelf()
+    {
+        // Arrange
+        var ownerId = Guid.NewGuid();
+        var board = new Board("Test", ownerId);
+
+        // Act
+        Result result = board.CanRemoveMember(ownerId, ownerId);
+
+        // Assert
+        Assert.True(result.IsFailure);
+        Assert.Equal(BoardErrors.CannotRemoveOwner, result.Error);
+    }
+
+    [Fact]
+    public void CanRemoveMember_ShouldFail_WhenMemberTriesToRemoveAnother()
+    {
+        // Arrange
+        var ownerId = Guid.NewGuid();
+        var member1 = Guid.NewGuid();
+        var member2 = Guid.NewGuid();
+        var board = new Board("Test", ownerId);
+        board.AddMember(member1);
+        board.AddMember(member2);
+
+        // Act
+        Result result = board.CanRemoveMember(member1, member2);
+
+        // Assert
+        Assert.True(result.IsFailure);
+        Assert.Equal(BoardErrors.CannotRemoveOtherMember, result.Error);
+    }
+
+    [Fact]
+    public void CanRemoveMember_ShouldSucceed_WhenOwnerRemovesMember()
+    {
+        // Arrange
+        var ownerId = Guid.NewGuid();
+        var memberId = Guid.NewGuid();
+        var board = new Board("Test", ownerId);
+        board.AddMember(memberId);
+
+        // Act
+        Result result = board.CanRemoveMember(ownerId, memberId);
+
+        // Assert
+        Assert.True(result.IsSuccess);
+    }
+
+    [Fact]
+    public void CanRemoveMember_ShouldSucceed_WhenMemberRemovesSelf()
+    {
+        // Arrange
+        var ownerId = Guid.NewGuid();
+        var memberId = Guid.NewGuid();
+        var board = new Board("Test", ownerId);
+        board.AddMember(memberId);
+
+        // Act
+        Result result = board.CanRemoveMember(memberId, memberId);
+
+        // Assert
+        Assert.True(result.IsSuccess);
     }
 
     [Fact]
@@ -119,48 +201,63 @@ public class BoardTests
     public void HasAccess_ShouldReturnFalse_ForNonMember()
     {
         // Arrange
-        var ownerId = Guid.NewGuid();
-        var nonMemberId = Guid.NewGuid();
-        var board = new Board("Test", ownerId);
+        var board = new Board("Test", Guid.NewGuid());
 
         // Act
-        bool hasAccess = board.HasAccess(nonMemberId);
+        bool hasAccess = board.HasAccess(Guid.NewGuid());
 
         // Assert
         Assert.False(hasAccess);
     }
 
     [Fact]
-    public void GetCardById_ShouldReturnCard_WhenCardExists()
-    {
-        // Arrange
-        var board = new Board("Test", Guid.NewGuid());
-        List list = board.AddList("List");
-        Card card = list.AddCard("Card", "Description");
-
-        // Act
-        Card? foundCard = board.GetCardById(card.Id);
-
-        // Assert
-        Assert.NotNull(foundCard);
-        Assert.Equal(card.Id, foundCard.Id);
-    }
-
-    [Fact]
-    public void GetCardById_ShouldReturnNull_WhenCardDoesNotExist()
+    public void AddList_ShouldAddListWithCorrectPosition_AndRaiseEvent()
     {
         // Arrange
         var board = new Board("Test", Guid.NewGuid());
 
         // Act
-        Card? foundCard = board.GetCardById(Guid.NewGuid());
+        List list1 = board.AddList("List 1");
+        List list2 = board.AddList("List 2");
 
         // Assert
-        Assert.Null(foundCard);
+        Assert.Equal(2, board.Lists.Count);
+        Assert.Equal(0, list1.Position);
+        Assert.Equal(1, list2.Position);
+        Assert.Contains(board.DomainEvents, e => e.GetType().Name == "ListAddedDomainEvent");
     }
 
     [Fact]
-    public void RemoveList_ShouldRemoveList_WhenListExists()
+    public void RenameList_ShouldUpdateName_AndRaiseEvent()
+    {
+        // Arrange
+        var board = new Board("Test", Guid.NewGuid());
+        List list = board.AddList("Old List");
+
+        // Act
+        Result result = board.RenameList(list.Id, "New List");
+
+        // Assert
+        Assert.True(result.IsSuccess);
+        Assert.Equal("New List", list.Name);
+        Assert.Contains(board.DomainEvents, e => e.GetType().Name == "ListRenamedDomainEvent");
+    }
+
+    [Fact]
+    public void RenameList_ShouldFail_WhenListNotFound()
+    {
+        // Arrange
+        var board = new Board("Test", Guid.NewGuid());
+
+        // Act
+        Result result = board.RenameList(Guid.NewGuid(), "New Name");
+
+        // Assert
+        Assert.True(result.IsFailure);
+    }
+
+    [Fact]
+    public void RemoveList_ShouldRemoveList_AndRaiseEvent()
     {
         // Arrange
         var board = new Board("Test", Guid.NewGuid());
@@ -171,6 +268,7 @@ public class BoardTests
 
         // Assert
         Assert.Empty(board.Lists);
+        Assert.Contains(board.DomainEvents, e => e.GetType().Name == "ListDeletedDomainEvent");
     }
 
     [Fact]
@@ -179,13 +277,15 @@ public class BoardTests
         // Arrange
         var board = new Board("Test", Guid.NewGuid());
 
-        // Act & Assert
-        board.RemoveList(Guid.NewGuid());
-        Assert.Empty(board.Lists);
+        // Act
+        Exception ex = Record.Exception(() => board.RemoveList(Guid.NewGuid()));
+
+        // Assert
+        Assert.Null(ex);
     }
 
     [Fact]
-    public void DeleteCard_ShouldRemoveCard_WhenCardExists()
+    public void GetCardById_ShouldReturnCard_WhenExists()
     {
         // Arrange
         var board = new Board("Test", Guid.NewGuid());
@@ -193,77 +293,53 @@ public class BoardTests
         Card card = list.AddCard("Card", "Description");
 
         // Act
-        board.DeleteCard(card.Id);
+        Card? found = board.GetCardById(card.Id);
 
         // Assert
-        Assert.Empty(list.Cards);
+        Assert.NotNull(found);
+        Assert.Equal(card.Id, found.Id);
     }
 
     [Fact]
-    public void DeleteCard_ShouldNotThrow_WhenCardDoesNotExist()
+    public void GetCardById_ShouldReturnNull_WhenNotExists()
     {
         // Arrange
         var board = new Board("Test", Guid.NewGuid());
-
-        // Act & Assert
-        board.DeleteCard(Guid.NewGuid());
-        Assert.Empty(board.Lists);
-    }
-
-    [Fact]
-    public void Constructor_ShouldThrowArgumentNullException_WhenNameIsNull()
-    {
-        // Arrange & Act & Assert
-        Assert.Throws<ArgumentNullException>(() => new Board(null!, Guid.NewGuid()));
-    }
-
-    [Fact]
-    public void UpdateName_ShouldThrowArgumentException_WhenNameIsEmpty()
-    {
-        // Arrange
-        var board = new Board("Test", Guid.NewGuid());
-
-        // Act & Assert
-        Assert.Throws<ArgumentException>(() => board.UpdateName(""));
-        Assert.Throws<ArgumentException>(() => board.UpdateName("   "));
-    }
-
-    [Fact]
-    public void GetCardById_ShouldReturnNull_WhenCardDoesNotExistInAnyList()
-    {
-        // Arrange
-        var board = new Board("Test", Guid.NewGuid());
-        board.AddList("List");
 
         // Act
-        Card? foundCard = board.GetCardById(Guid.NewGuid());
+        Card? found = board.GetCardById(Guid.NewGuid());
 
         // Assert
-        Assert.Null(foundCard);
+        Assert.Null(found);
     }
 
     [Fact]
-    public void DeleteCard_ShouldNotThrow_WhenCardDoesNotExistInAnyList()
+    public void MoveCard_ShouldFail_WhenCardNotFound()
     {
         // Arrange
         var board = new Board("Test", Guid.NewGuid());
         List list = board.AddList("List");
 
-        // Act & Assert
-        board.DeleteCard(Guid.NewGuid());
-        Assert.Empty(list.Cards);
+        // Act
+        Result result = board.MoveCard(Guid.NewGuid(), list.Id, 0);
+
+        // Assert
+        Assert.True(result.IsFailure);
     }
 
     [Fact]
-    public void RemoveList_ShouldNotThrow_WhenListDoesNotExistInBoard()
+    public void MoveCard_ShouldFail_WhenTargetListNotFound()
     {
         // Arrange
         var board = new Board("Test", Guid.NewGuid());
-        board.AddList("List");
+        List list = board.AddList("List");
+        Card card = list.AddCard("Card", "Desc");
 
-        // Act & Assert
-        board.RemoveList(Guid.NewGuid());
-        Assert.Single(board.Lists);
+        // Act
+        Result result = board.MoveCard(card.Id, Guid.NewGuid(), 0);
+
+        // Assert
+        Assert.True(result.IsFailure);
     }
 
     [Fact]
@@ -284,6 +360,7 @@ public class BoardTests
         Assert.DoesNotContain(card, sourceList.Cards);
         Assert.Contains(card, targetList.Cards);
         Assert.Equal(0, card.Position);
+        Assert.Contains(board.DomainEvents, e => e.GetType().Name == "CardMovedDomainEvent");
     }
 
     [Fact]
@@ -337,7 +414,6 @@ public class BoardTests
         var board = new Board("Test Board", Guid.NewGuid());
         List sourceList = board.AddList("Source");
         List targetList = board.AddList("Target");
-
         Card card1 = targetList.AddCard("Card 1", "Desc");
         Card card2 = targetList.AddCard("Card 2", "Desc");
         Card cardToMove = sourceList.AddCard("To Move", "Desc");
@@ -361,7 +437,6 @@ public class BoardTests
         var board = new Board("Test Board", Guid.NewGuid());
         List sourceList = board.AddList("Source");
         List targetList = board.AddList("Target");
-
         Card card1 = targetList.AddCard("Card 1", "Desc");
         Card card2 = targetList.AddCard("Card 2", "Desc");
         Card card3 = targetList.AddCard("Card 3", "Desc");
@@ -387,7 +462,6 @@ public class BoardTests
         var board = new Board("Test Board", Guid.NewGuid());
         List sourceList = board.AddList("Source");
         List targetList = board.AddList("Target");
-
         Card card1 = targetList.AddCard("Card 1", "Desc");
         Card card2 = targetList.AddCard("Card 2", "Desc");
         Card cardToMove = sourceList.AddCard("To Move", "Desc");
@@ -402,5 +476,35 @@ public class BoardTests
         Assert.Equal(0, card1.Position);
         Assert.Equal(1, card2.Position);
         Assert.Equal(2, cardToMove.Position);
+    }
+
+    [Fact]
+    public void DeleteCard_ShouldRemoveCardAndUpdateDate()
+    {
+        // Arrange
+        var board = new Board("Test", Guid.NewGuid());
+        List list = board.AddList("List");
+        Card card = list.AddCard("Card", "Desc");
+        DateTime before = board.UpdatedAt;
+
+        // Act
+        board.DeleteCard(card.Id);
+
+        // Assert
+        Assert.Empty(list.Cards);
+        Assert.True(board.UpdatedAt > before);
+    }
+
+    [Fact]
+    public void DeleteCard_ShouldNotThrow_WhenCardDoesNotExist()
+    {
+        // Arrange
+        var board = new Board("Test", Guid.NewGuid());
+
+        // Act
+        Exception ex = Record.Exception(() => board.DeleteCard(Guid.NewGuid()));
+
+        // Assert
+        Assert.Null(ex);
     }
 }
