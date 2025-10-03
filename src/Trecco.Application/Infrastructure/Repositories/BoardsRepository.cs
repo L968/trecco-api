@@ -43,4 +43,12 @@ internal sealed class BoardRepository : IBoardRepository
             board,
             cancellationToken: cancellationToken
         );
+
+    public async Task DeleteAsync(Guid boardId, CancellationToken cancellationToken)
+    {
+        await _boards.DeleteOneAsync(
+            b => b.Id == boardId,
+            cancellationToken
+        );
+    }
 }

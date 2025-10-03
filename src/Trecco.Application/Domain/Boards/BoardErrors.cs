@@ -20,6 +20,12 @@ internal static class BoardErrors
             "User is not allowed to access this board."
         );
 
+    public static Error NoPermission =>
+        Error.Forbidden(
+            "Board.NoPermission",
+            "User does not have permission to perform this action."
+        );
+
     public static Error CannotRemoveOwner =>
         Error.Forbidden(
             "Board.CannotRemoveOwner",
