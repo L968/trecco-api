@@ -1,20 +1,20 @@
 ﻿using MongoDB.Driver;
-using Trecco.Application.Domain.BoardActionLogs;
+using Trecco.Domain.BoardActionLogs;
 
 namespace Trecco.Application.Infrastructure.Repositories;
 
 internal sealed class BoardActionLogRepository : IBoardActionLogRepository
 {
-    private readonly IMongoCollection<BoardActionLog> _logs;
+    private readonly IMongoCollection<BoardActionLog> _boardLogs;
 
     public BoardActionLogRepository(IMongoDatabase database)
     {
-        _logs = database.GetCollection<BoardActionLog>("BoardActionLogs");
+        _boardLogs = database.GetCollection<BoardActionLog>("BoardActionLogs");
     }
 
     public async Task AddAsync(BoardActionLog log, CancellationToken cancellationToken = default)
     {
-        await _logs.InsertOneAsync(log, cancellationToken: cancellationToken);
+        await _boardLogs.InsertOneAsync(log, cancellationToken: cancellationToken);
     }
 
     public async Task<IEnumerable<BoardActionLog>> GetByBoardAsync(
@@ -36,7 +36,7 @@ internal sealed class BoardActionLogRepository : IBoardActionLogRepository
             filter = Builders<BoardActionLog>.Filter.And(filter, searchFilter);
         }
 
-        return await _logs
+        return await _boardLogs
             .Find(filter)
             .SortByDescending(l => l.Timestamp)
             .Skip((page - 1) * pageSize)

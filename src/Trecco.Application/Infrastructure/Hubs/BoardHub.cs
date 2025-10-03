@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.SignalR;
-using Trecco.Application.Domain.Boards;
 
 namespace Trecco.Application.Infrastructure.Hubs;
 

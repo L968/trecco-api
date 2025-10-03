@@ -1,5 +1,4 @@
-﻿using Trecco.Application.Domain.Boards;
-using Trecco.Application.Domain.Cards;
+﻿using Trecco.Domain.Cards;
 
 namespace Trecco.Application.Features.Cards.UpdateCard;
 

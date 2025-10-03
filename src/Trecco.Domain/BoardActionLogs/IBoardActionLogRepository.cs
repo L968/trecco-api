@@ -1,6 +1,6 @@
-﻿namespace Trecco.Application.Domain.BoardActionLogs;
+﻿namespace Trecco.Domain.BoardActionLogs;
 
-internal interface IBoardActionLogRepository
+public interface IBoardActionLogRepository
 {
     Task AddAsync(BoardActionLog log, CancellationToken cancellationToken = default);
     Task<IEnumerable<BoardActionLog>> GetByBoardAsync(Guid boardId, int page, int pageSize, string? searchTerm = null, CancellationToken cancellationToken = default);

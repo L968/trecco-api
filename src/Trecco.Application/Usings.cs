@@ -5,3 +5,5 @@ global using Microsoft.AspNetCore.Http;
 global using Microsoft.AspNetCore.Routing;
 global using Microsoft.Extensions.Logging;
 global using Trecco.Application.Common.Results;
+global using Trecco.Domain.Boards;
+global using Trecco.Domain.Results;

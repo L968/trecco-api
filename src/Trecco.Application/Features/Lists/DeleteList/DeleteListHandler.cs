@@ -1,6 +1,4 @@
 ﻿using Trecco.Application.Common.DomainEvents;
-using Trecco.Application.Domain.Boards;
-using Trecco.Application.Domain.Lists;
 
 namespace Trecco.Application.Features.Lists.DeleteList;
 

@@ -1,4 +1,6 @@
-﻿namespace Trecco.Application.Common.DomainEvents;
+﻿using Trecco.Domain.DomainEvents;
+
+namespace Trecco.Application.Common.DomainEvents;
 
 internal sealed class DomainEventDispatcher : IDomainEventDispatcher
 {

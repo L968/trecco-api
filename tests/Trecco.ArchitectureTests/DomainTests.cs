@@ -1,6 +1,6 @@
 ﻿using NetArchTest.Rules;
-using Trecco.Application.Common.DomainEvents;
 using Trecco.ArchitectureTests.Abstractions;
+using Trecco.Domain.DomainEvents;
 
 namespace Trecco.ArchitectureTests;
 

@@ -1,4 +1,6 @@
-﻿namespace Trecco.Application.Common.DomainEvents;
+﻿using MediatR;
+
+namespace Trecco.Domain.DomainEvents;
 
 public abstract record DomainEvent : INotification
 {

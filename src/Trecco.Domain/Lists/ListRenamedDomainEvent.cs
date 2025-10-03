@@ -1,6 +1,6 @@
-﻿using Trecco.Application.Common.DomainEvents;
+﻿using Trecco.Domain.DomainEvents;
 
-namespace Trecco.Application.Domain.Lists;
+namespace Trecco.Domain.Lists;
 
 public sealed record ListRenamedDomainEvent : DomainEvent
 {

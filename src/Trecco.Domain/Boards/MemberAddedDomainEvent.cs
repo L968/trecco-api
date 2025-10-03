@@ -1,6 +1,6 @@
-﻿using Trecco.Application.Common.DomainEvents;
+﻿using Trecco.Domain.DomainEvents;
 
-namespace Trecco.Application.Domain.Boards;
+namespace Trecco.Domain.Boards;
 
 public sealed record MemberAddedDomainEvent : DomainEvent
 {

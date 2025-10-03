@@ -1,8 +1,5 @@
-using Trecco.Application.Common.Results;
-using Trecco.Application.Domain.Boards;
-using Trecco.Application.Domain.Cards;
-using Trecco.Application.Domain.Lists;
 using Trecco.Application.Features.Boards.Queries.GetBoardById;
+using Trecco.Domain.Lists;
 
 namespace Trecco.UnitTests.Application.Features.Boards;
 

@@ -1,6 +1,8 @@
-﻿namespace Trecco.Application.Common.DomainEvents;
+﻿using Trecco.Domain.DomainEvents;
 
-public interface IDomainEventDispatcher
+namespace Trecco.Application.Common.DomainEvents;
+
+internal interface IDomainEventDispatcher
 {
     Task DispatchAsync(Entity entity, CancellationToken cancellationToken);
 }

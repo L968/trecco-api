@@ -1,6 +1,8 @@
-﻿namespace Trecco.Application.Domain.Boards;
+﻿using Trecco.Domain.Results;
 
-internal static class BoardErrors
+namespace Trecco.Domain.Boards;
+
+public static class BoardErrors
 {
     public static Error NotFound(Guid boardId) =>
         Error.NotFound(

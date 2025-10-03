@@ -1,8 +1,8 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
-using Trecco.Application.Domain.Cards;
+using Trecco.Domain.Cards;
 
-namespace Trecco.Application.Domain.Lists;
+namespace Trecco.Domain.Lists;
 
 public sealed class List
 {

@@ -1,6 +1,4 @@
-﻿using Trecco.Application.Domain.Boards;
-
-namespace Trecco.Application.Features.Boards.Commands.DeleteBoard;
+﻿namespace Trecco.Application.Features.Boards.Commands.DeleteBoard;
 
 internal sealed class DeleteBoardHandler(
     IBoardRepository boardRepository,

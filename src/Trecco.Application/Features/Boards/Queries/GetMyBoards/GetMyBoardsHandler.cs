@@ -1,6 +1,4 @@
-﻿using Trecco.Application.Domain.Boards;
-
-namespace Trecco.Application.Features.Boards.Queries.GetMyBoards;
+﻿namespace Trecco.Application.Features.Boards.Queries.GetMyBoards;
 
 internal sealed class GetMyBoardsHandler(
     IBoardRepository boardRepository,
@@ -9,10 +7,14 @@ internal sealed class GetMyBoardsHandler(
 {
     public async Task<IEnumerable<GetMyBoardsResponse>> Handle(GetMyBoardsQuery request, CancellationToken cancellationToken)
     {
-        IEnumerable<GetMyBoardsResponse> boards = await boardRepository.GetBoardsByUserAsync(request.OwnerUserId, cancellationToken);
+        IEnumerable<Board> boards = await boardRepository.GetByUserIdAsync(request.UserId, cancellationToken);
 
-        logger.LogDebug("Fetched {Count} boards for owner {OwnerUserId}", boards.Count(), request.OwnerUserId);
+        logger.LogDebug("Fetched {Count} boards for owner {OwnerUserId}", boards.Count(), request.UserId);
 
-        return boards;
+        return boards.Select(b => new GetMyBoardsResponse(
+            b.Id,
+            b.Name,
+            b.MemberIds.Count
+        ));
     }
 }

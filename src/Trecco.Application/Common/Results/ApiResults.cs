@@ -1,6 +1,6 @@
 ﻿namespace Trecco.Application.Common.Results;
 
-public static class ApiResults
+internal static class ApiResults
 {
     private sealed record ErrorMapping(string Title, string DefaultDetail, string Uri, int StatusCode);
 

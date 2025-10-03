@@ -1,4 +1,4 @@
-using Trecco.Application.Domain.Boards;
+using Moq;
 using Trecco.Application.Features.Boards.Queries.GetMyBoards;
 
 namespace Trecco.UnitTests.Application.Features.Boards;
@@ -20,10 +20,10 @@ public class GetMyBoardsHandlerTests
     public async Task Handle_ShouldReturnEmptyList_WhenNoBoardsFound()
     {
         // Arrange
-        var ownerId = Guid.NewGuid();
-        var query = new GetMyBoardsQuery(ownerId);
+        var userId = Guid.NewGuid();
+        var query = new GetMyBoardsQuery(userId);
         _repositoryMock
-            .Setup(r => r.GetBoardsByUserAsync(ownerId, It.IsAny<CancellationToken>()))
+            .Setup(r => r.GetByUserIdAsync(userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync([]);
 
         // Act
@@ -31,23 +31,24 @@ public class GetMyBoardsHandlerTests
 
         // Assert
         Assert.Empty(result);
-        _repositoryMock.Verify(r => r.GetBoardsByUserAsync(ownerId, It.IsAny<CancellationToken>()), Times.Once);
+        _repositoryMock.Verify(r => r.GetByUserIdAsync(userId, It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
     public async Task Handle_ShouldReturnBoards_WhenBoardsFound()
     {
         // Arrange
-        var ownerId = Guid.NewGuid();
-        var query = new GetMyBoardsQuery(ownerId);
-        var boards = new List<GetMyBoardsResponse>
-        {
-            new(Guid.NewGuid(), "Board 1", 0),
-            new(Guid.NewGuid(), "Board 2", 0),
-            new(Guid.NewGuid(), "Board 3", 0)
-        };
+        var userId = Guid.NewGuid();
+        var query = new GetMyBoardsQuery(userId);
+
+        var boards = new List<Board>
+    {
+        new Board("Board 1", userId),
+        new Board("Board 2", userId),
+        new Board("Board 3", userId)    };
+
         _repositoryMock
-            .Setup(r => r.GetBoardsByUserAsync(ownerId, It.IsAny<CancellationToken>()))
+            .Setup(r => r.GetByUserIdAsync(userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(boards);
 
         // Act
@@ -58,7 +59,8 @@ public class GetMyBoardsHandlerTests
         Assert.Contains(result, b => b.Name == "Board 1");
         Assert.Contains(result, b => b.Name == "Board 2");
         Assert.Contains(result, b => b.Name == "Board 3");
-        _repositoryMock.Verify(r => r.GetBoardsByUserAsync(ownerId, It.IsAny<CancellationToken>()), Times.Once);
+
+        _repositoryMock.Verify(r => r.GetByUserIdAsync(userId, It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -66,14 +68,13 @@ public class GetMyBoardsHandlerTests
     {
         // Arrange
         var ownerId = Guid.NewGuid();
-        var boardId = Guid.NewGuid();
         var query = new GetMyBoardsQuery(ownerId);
-        var boards = new List<GetMyBoardsResponse>
-        {
-            new(boardId, "Single Board", 0)
-        };
+        var board = new Board("Single Board", ownerId);
+
+        var boards = new List<Board> { board };
+
         _repositoryMock
-            .Setup(r => r.GetBoardsByUserAsync(ownerId, It.IsAny<CancellationToken>()))
+            .Setup(r => r.GetByUserIdAsync(ownerId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(boards);
 
         // Act
@@ -81,10 +82,11 @@ public class GetMyBoardsHandlerTests
 
         // Assert
         Assert.Single(result);
-        GetMyBoardsResponse board = result.First();
-        Assert.Equal(boardId, board.Id);
-        Assert.Equal("Single Board", board.Name);
-        _repositoryMock.Verify(r => r.GetBoardsByUserAsync(ownerId, It.IsAny<CancellationToken>()), Times.Once);
+        GetMyBoardsResponse response = result.First();
+        Assert.Equal(board.Id, response.Id);
+        Assert.Equal(board.Name, response.Name);
+
+        _repositoryMock.Verify(r => r.GetByUserIdAsync(ownerId, It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -92,14 +94,15 @@ public class GetMyBoardsHandlerTests
     {
         // Arrange
         var memberId = Guid.NewGuid();
-        var boardId = Guid.NewGuid();
         var query = new GetMyBoardsQuery(memberId);
-        var boards = new List<GetMyBoardsResponse>
-        {
-            new(boardId, "Member Board", 1) // Usuário é membro, não owner
-        };
+
+        var board = new Board("Member Board", Guid.NewGuid());
+        board.AddMember(memberId);
+
+        var boards = new List<Board> { board };
+
         _repositoryMock
-            .Setup(r => r.GetBoardsByUserAsync(memberId, It.IsAny<CancellationToken>()))
+            .Setup(r => r.GetByUserIdAsync(memberId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(boards);
 
         // Act
@@ -107,11 +110,13 @@ public class GetMyBoardsHandlerTests
 
         // Assert
         Assert.Single(result);
-        GetMyBoardsResponse board = result.First();
-        Assert.Equal(boardId, board.Id);
-        Assert.Equal("Member Board", board.Name);
-        _repositoryMock.Verify(r => r.GetBoardsByUserAsync(memberId, It.IsAny<CancellationToken>()), Times.Once);
+        GetMyBoardsResponse response = result.First();
+        Assert.Equal(board.Id, response.Id);
+        Assert.Equal(board.Name, response.Name);
+
+        _repositoryMock.Verify(r => r.GetByUserIdAsync(memberId, It.IsAny<CancellationToken>()), Times.Once);
     }
+
 
     [Fact]
     public async Task Handle_ShouldCallRepositoryWithCorrectParameters()
@@ -121,13 +126,13 @@ public class GetMyBoardsHandlerTests
         var query = new GetMyBoardsQuery(ownerId);
         var cancellationToken = new CancellationToken();
         _repositoryMock
-            .Setup(r => r.GetBoardsByUserAsync(ownerId, cancellationToken))
+            .Setup(r => r.GetByUserIdAsync(ownerId, cancellationToken))
             .ReturnsAsync([]);
 
         // Act
         await _handler.Handle(query, cancellationToken);
 
         // Assert
-        _repositoryMock.Verify(r => r.GetBoardsByUserAsync(ownerId, cancellationToken), Times.Once);
+        _repositoryMock.Verify(r => r.GetByUserIdAsync(ownerId, cancellationToken), Times.Once);
     }
 }

@@ -15,4 +15,8 @@
 		<InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <ProjectReference Include="..\Trecco.Domain\Trecco.Domain.csproj" />
+	</ItemGroup>
+
 </Project>

@@ -1,6 +1,5 @@
 ﻿using Trecco.Application.Common.DomainEvents;
-using Trecco.Application.Domain.Boards;
-using Trecco.Application.Domain.Lists;
+using Trecco.Domain.Lists;
 
 namespace Trecco.Application.Features.Lists.CreateList;
 

@@ -1,6 +1,4 @@
-﻿using Trecco.Application.Common.Results;
-using Trecco.Application.Domain.Boards;
-using Trecco.Application.Features.Boards.Commands.RemoveMember;
+﻿using Trecco.Application.Features.Boards.Commands.RemoveMember;
 
 namespace Trecco.UnitTests.Application.Features.Boards;
 

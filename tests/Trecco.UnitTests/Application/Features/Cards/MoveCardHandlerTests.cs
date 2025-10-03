@@ -1,9 +1,8 @@
 ﻿using Trecco.Application.Common.DomainEvents;
-using Trecco.Application.Common.Results;
-using Trecco.Application.Domain.Boards;
-using Trecco.Application.Domain.Cards;
-using Trecco.Application.Domain.Lists;
 using Trecco.Application.Features.Cards.MoveCard;
+using Trecco.Domain.Cards;
+using Trecco.Domain.DomainEvents;
+using Trecco.Domain.Lists;
 
 namespace Trecco.UnitTests.Application.Features.Cards;
 

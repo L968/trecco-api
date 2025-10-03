@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Trecco.Application\Trecco.Application.csproj" />
+    <ProjectReference Include="..\..\src\Trecco.Domain\Trecco.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>

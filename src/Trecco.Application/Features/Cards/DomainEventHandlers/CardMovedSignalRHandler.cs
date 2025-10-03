@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR;
-using Trecco.Application.Domain.Cards;
 using Trecco.Application.Infrastructure.Hubs;
+using Trecco.Domain.Cards;
 
 namespace Trecco.Application.Features.Cards.DomainEventHandlers;
 

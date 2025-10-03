@@ -1,6 +1,4 @@
-﻿using Trecco.Application.Domain.Boards;
-
-namespace Trecco.Application.Features.Cards.DeleteCard;
+﻿namespace Trecco.Application.Features.Cards.DeleteCard;
 
 internal sealed class DeleteCardHandler(
     IBoardRepository boardRepository,

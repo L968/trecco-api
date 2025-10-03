@@ -1,5 +1,5 @@
 ﻿namespace Trecco.Application.Features.Boards.Queries.GetMyBoards;
 
 public sealed record GetMyBoardsQuery(
-    Guid OwnerUserId
+    Guid UserId
 ) : IRequest<IEnumerable<GetMyBoardsResponse>>;

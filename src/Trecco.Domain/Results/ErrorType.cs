@@ -1,4 +1,4 @@
-﻿namespace Trecco.Application.Common.Results;
+﻿namespace Trecco.Domain.Results;
 
 public enum ErrorType
 {

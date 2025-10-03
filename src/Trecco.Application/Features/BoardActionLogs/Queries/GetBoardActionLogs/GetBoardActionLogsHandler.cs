@@ -1,6 +1,5 @@
 ﻿using Trecco.Application.Common;
-using Trecco.Application.Domain.BoardActionLogs;
-using Trecco.Application.Domain.Boards;
+using Trecco.Domain.BoardActionLogs;
 
 namespace Trecco.Application.Features.BoardActionLogs.Queries.GetBoardActionLogs;
 

@@ -1,5 +1,5 @@
-﻿using Trecco.Application.Domain.Cards;
-using Trecco.Application.Domain.Lists;
+﻿using Trecco.Domain.Cards;
+using Trecco.Domain.Lists;
 
 namespace Trecco.UnitTests.Domain;
 

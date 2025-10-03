@@ -1,10 +1,11 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
-using Trecco.Application.Common.DomainEvents;
-using Trecco.Application.Domain.Cards;
-using Trecco.Application.Domain.Lists;
+using Trecco.Domain.Cards;
+using Trecco.Domain.DomainEvents;
+using Trecco.Domain.Lists;
+using Trecco.Domain.Results;
 
-namespace Trecco.Application.Domain.Boards;
+namespace Trecco.Domain.Boards;
 
 public sealed class Board : Entity
 {

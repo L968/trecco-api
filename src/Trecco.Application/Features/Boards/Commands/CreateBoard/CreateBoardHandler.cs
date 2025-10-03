@@ -1,6 +1,4 @@
-﻿using Trecco.Application.Domain.Boards;
-
-namespace Trecco.Application.Features.Boards.Commands.CreateBoard;
+﻿namespace Trecco.Application.Features.Boards.Commands.CreateBoard;
 
 internal sealed class CreateBoardHandler(
     IBoardRepository boardRepository,

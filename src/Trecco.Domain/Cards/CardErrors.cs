@@ -1,6 +1,8 @@
-﻿namespace Trecco.Application.Domain.Cards;
+﻿using Trecco.Domain.Results;
 
-internal static class CardErrors
+namespace Trecco.Domain.Cards;
+
+public static class CardErrors
 {
     public static Error NotFound(Guid cardId) =>
         Error.NotFound(

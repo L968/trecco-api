@@ -1,5 +1,4 @@
 ﻿using Trecco.Application.Common.DomainEvents;
-using Trecco.Application.Domain.Boards;
 
 namespace Trecco.Application.Features.Lists.UpdateListName;
 

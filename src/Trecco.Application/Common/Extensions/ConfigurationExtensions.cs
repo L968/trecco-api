@@ -2,7 +2,7 @@
 
 namespace Trecco.Application.Common.Extensions;
 
-public static class ConfigurationExtensions
+internal static class ConfigurationExtensions
 {
     public static string GetConnectionStringOrThrow(this IConfiguration configuration, string name)
     {

@@ -1,4 +1,4 @@
-﻿using Trecco.Application.Domain.Cards;
+﻿using Trecco.Domain.Cards;
 
 namespace Trecco.UnitTests.Domain;
 

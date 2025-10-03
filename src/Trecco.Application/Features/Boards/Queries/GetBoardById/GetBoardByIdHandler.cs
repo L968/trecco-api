@@ -1,6 +1,4 @@
-﻿using Trecco.Application.Domain.Boards;
-
-namespace Trecco.Application.Features.Boards.Queries.GetBoardById;
+﻿namespace Trecco.Application.Features.Boards.Queries.GetBoardById;
 
 internal sealed class GetBoardByIdHandler(
     IBoardRepository boardRepository,

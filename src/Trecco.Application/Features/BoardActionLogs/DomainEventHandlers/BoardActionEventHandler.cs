@@ -1,10 +1,9 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using Trecco.Application.Common.Authentication;
-using Trecco.Application.Domain.BoardActionLogs;
-using Trecco.Application.Domain.Boards;
-using Trecco.Application.Domain.Cards;
-using Trecco.Application.Domain.Lists;
 using Trecco.Application.Infrastructure.Hubs;
+using Trecco.Domain.BoardActionLogs;
+using Trecco.Domain.Cards;
+using Trecco.Domain.Lists;
 
 namespace Trecco.Application.Features.BoardActionLogs.DomainEventHandlers;
 

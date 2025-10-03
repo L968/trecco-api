@@ -1,6 +1,4 @@
 ﻿using MongoDB.Driver;
-using Trecco.Application.Domain.Boards;
-using Trecco.Application.Features.Boards.Queries.GetMyBoards;
 
 namespace Trecco.Application.Infrastructure.Repositories;
 
@@ -13,7 +11,7 @@ internal sealed class BoardRepository : IBoardRepository
         _boards = database.GetCollection<Board>("Boards");
     }
 
-    public async Task<IEnumerable<GetMyBoardsResponse>> GetBoardsByUserAsync(Guid userId, CancellationToken cancellationToken)
+    public async Task<IEnumerable<Board>> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken)
     {
         FilterDefinition<Board> filter = Builders<Board>.Filter.Or(
             Builders<Board>.Filter.Eq(b => b.OwnerUserId, userId),
@@ -24,11 +22,7 @@ internal sealed class BoardRepository : IBoardRepository
             .Find(filter)
             .ToListAsync(cancellationToken);
 
-        return boards.Select(b => new GetMyBoardsResponse(
-            b.Id,
-            b.Name,
-            b.MemberIds.Count
-        ));
+        return boards;
     }
 
     public async Task<Board?> GetByIdAsync(Guid id, CancellationToken cancellationToken) =>
@@ -44,10 +38,10 @@ internal sealed class BoardRepository : IBoardRepository
             cancellationToken: cancellationToken
         );
 
-    public async Task DeleteAsync(Guid boardId, CancellationToken cancellationToken)
+    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken)
     {
         await _boards.DeleteOneAsync(
-            b => b.Id == boardId,
+            b => b.Id == id,
             cancellationToken
         );
     }

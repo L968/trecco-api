@@ -1,7 +1,7 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace Trecco.Application.Domain.Cards;
+namespace Trecco.Domain.Cards;
 
 public sealed class Card
 {

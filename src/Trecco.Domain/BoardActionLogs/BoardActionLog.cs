@@ -1,7 +1,7 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace Trecco.Application.Domain.BoardActionLogs;
+namespace Trecco.Domain.BoardActionLogs;
 
 public sealed class BoardActionLog
 {

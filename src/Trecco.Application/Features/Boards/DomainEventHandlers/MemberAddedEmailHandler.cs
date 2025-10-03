@@ -1,6 +1,4 @@
-﻿using Trecco.Application.Domain.Boards;
-
-namespace Trecco.Application.Features.Boards.DomainEventHandlers;
+﻿namespace Trecco.Application.Features.Boards.DomainEventHandlers;
 
 internal sealed class MemberAddedEmailHandler : INotificationHandler<MemberAddedDomainEvent>
 {

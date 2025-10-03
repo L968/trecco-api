@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace Trecco.Application.Common.Results;
+namespace Trecco.Domain.Results;
 
 public abstract class ResultBase
 {

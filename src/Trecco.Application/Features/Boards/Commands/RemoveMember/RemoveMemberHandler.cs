@@ -1,6 +1,4 @@
-﻿using Trecco.Application.Domain.Boards;
-
-namespace Trecco.Application.Features.Boards.Commands.RemoveMember;
+﻿namespace Trecco.Application.Features.Boards.Commands.RemoveMember;
 
 internal sealed class RemoveMemberHandler(
     IBoardRepository boardRepository,

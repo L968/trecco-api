@@ -1,6 +1,6 @@
-﻿using Trecco.Application.Common.DomainEvents;
+﻿using Trecco.Domain.DomainEvents;
 
-namespace Trecco.Application.Domain.Cards;
+namespace Trecco.Domain.Cards;
 
 public sealed record CardMovedDomainEvent : DomainEvent
 {

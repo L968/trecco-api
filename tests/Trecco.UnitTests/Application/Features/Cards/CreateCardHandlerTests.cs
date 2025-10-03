@@ -1,7 +1,5 @@
-﻿using Trecco.Application.Common.Results;
-using Trecco.Application.Domain.Boards;
-using Trecco.Application.Domain.Lists;
-using Trecco.Application.Features.Cards.CreateCard;
+﻿using Trecco.Application.Features.Cards.CreateCard;
+using Trecco.Domain.Lists;
 
 namespace Trecco.UnitTests.Application.Features.Cards;
 
