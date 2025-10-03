@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using Trecco.Application.Common.Authentication;
 using Trecco.Application.Domain.BoardActionLogs;
+using Trecco.Application.Domain.Boards;
 using Trecco.Application.Domain.Cards;
 using Trecco.Application.Domain.Lists;
 using Trecco.Application.Infrastructure.Hubs;
@@ -9,6 +10,7 @@ namespace Trecco.Application.Features.BoardActionLogs.DomainEventHandlers;
 
 internal sealed class BoardActionEventHandler
     : INotificationHandler<CardMovedDomainEvent>,
+      INotificationHandler<MemberAddedDomainEvent>,
       INotificationHandler<ListAddedDomainEvent>,
       INotificationHandler<ListRenamedDomainEvent>,
       INotificationHandler<ListDeletedDomainEvent>
@@ -32,6 +34,16 @@ internal sealed class BoardActionEventHandler
         Guid userId = EnsureUserId();
         string maskedUser = MaskUserId(userId);
         string logDetails = $"User {maskedUser} moved card '{notification.CardTitle}' to '{notification.TargetListName}'";
+
+        await SaveAndBroadcastAsync(notification.BoardId, userId, logDetails, cancellationToken);
+    }
+
+    public async Task Handle(MemberAddedDomainEvent notification, CancellationToken cancellationToken)
+    {
+        Guid userId = EnsureUserId();
+        string maskedUser = MaskUserId(userId);
+        string maskedMember = MaskUserId(notification.UserId);
+        string logDetails = $"User {maskedUser} added member '{maskedMember}'";
 
         await SaveAndBroadcastAsync(notification.BoardId, userId, logDetails, cancellationToken);
     }
