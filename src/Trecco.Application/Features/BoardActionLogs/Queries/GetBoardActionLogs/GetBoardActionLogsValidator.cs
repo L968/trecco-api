@@ -9,5 +9,10 @@ internal sealed class GetBoardActionLogsValidator : AbstractValidator<GetBoardAc
 
         RuleFor(x => x.UserId)
             .NotEmpty();
+
+        RuleFor(x => x.SearchTerm)
+            .MaximumLength(50)
+            .Must(term => string.IsNullOrWhiteSpace(term) || !string.IsNullOrWhiteSpace(term.Trim()))
+                .WithMessage("Search term cannot be empty or whitespace.");
     }
 }

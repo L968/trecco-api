@@ -27,6 +27,7 @@ internal sealed class GetBoardActionLogsHandler(
             request.BoardId,
             request.Page,
             request.PageSize,
+            request.SearchTerm,
             cancellationToken
         );
 

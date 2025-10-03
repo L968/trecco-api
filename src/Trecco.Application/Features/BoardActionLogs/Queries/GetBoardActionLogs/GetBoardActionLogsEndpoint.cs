@@ -15,7 +15,8 @@ internal sealed class GetBoardActionLogsEndpoint : IEndpoint
                 ISender sender,
                 CancellationToken cancellationToken,
                 [FromQuery] int page = 1,
-                [FromQuery] int pageSize = 15
+                [FromQuery] int pageSize = 15,
+                [FromQuery] string? searchTerm = null
             ) =>
             {
                 if (requesterId is null)
@@ -23,7 +24,7 @@ internal sealed class GetBoardActionLogsEndpoint : IEndpoint
                     return Results.StatusCode(StatusCodes.Status403Forbidden);
                 }
 
-                var query = new GetBoardActionLogsQuery(boardId, requesterId.Value, page, pageSize);
+                var query = new GetBoardActionLogsQuery(boardId, requesterId.Value, page, pageSize, searchTerm);
                 Result<PaginatedList<GetBoardActionLogsResponse>> result = await sender.Send(query, cancellationToken);
 
                 return result.Match(
@@ -31,7 +32,6 @@ internal sealed class GetBoardActionLogsEndpoint : IEndpoint
                     onFailure: ApiResults.Problem
                 );
             })
-            .WithTags(Tags.Boards);
-
+        .WithTags(Tags.Boards);
     }
 }
