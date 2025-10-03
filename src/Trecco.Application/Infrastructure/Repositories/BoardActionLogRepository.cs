@@ -17,11 +17,13 @@ internal sealed class BoardActionLogRepository : IBoardActionLogRepository
         await _logs.InsertOneAsync(log, cancellationToken: cancellationToken);
     }
 
-    public async Task<IEnumerable<BoardActionLog>> GetByBoardAsync(Guid boardId, CancellationToken cancellationToken)
+    public async Task<IEnumerable<BoardActionLog>> GetByBoardAsync(Guid boardId, int page, int pageSize, CancellationToken cancellationToken)
     {
         return await _logs
             .Find(l => l.BoardId == boardId)
             .SortByDescending(l => l.Timestamp)
+            .Skip((page - 1) * pageSize)
+            .Limit(pageSize)
             .ToListAsync(cancellationToken);
     }
 }

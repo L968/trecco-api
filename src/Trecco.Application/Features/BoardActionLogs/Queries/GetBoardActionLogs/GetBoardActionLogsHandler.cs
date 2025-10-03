@@ -1,4 +1,5 @@
-﻿using Trecco.Application.Domain.BoardActionLogs;
+﻿using Trecco.Application.Common;
+using Trecco.Application.Domain.BoardActionLogs;
 using Trecco.Application.Domain.Boards;
 
 namespace Trecco.Application.Features.BoardActionLogs.Queries.GetBoardActionLogs;
@@ -7,9 +8,9 @@ internal sealed class GetBoardActionLogsHandler(
     IBoardActionLogRepository logRepository,
     IBoardRepository boardRepository,
     ILogger<GetBoardActionLogsHandler> logger
-) : IRequestHandler<GetBoardActionLogsQuery, Result<IEnumerable<GetBoardActionLogsResponse>>>
+) : IRequestHandler<GetBoardActionLogsQuery, Result<PaginatedList<GetBoardActionLogsResponse>>>
 {
-    public async Task<Result<IEnumerable<GetBoardActionLogsResponse>>> Handle(GetBoardActionLogsQuery request, CancellationToken cancellationToken)
+    public async Task<Result<PaginatedList<GetBoardActionLogsResponse>>> Handle(GetBoardActionLogsQuery request, CancellationToken cancellationToken)
     {
         Board? board = await boardRepository.GetByIdAsync(request.BoardId, cancellationToken);
         if (board is null)
@@ -22,17 +23,29 @@ internal sealed class GetBoardActionLogsHandler(
             return Result.Failure(BoardErrors.NotAuthorized);
         }
 
-        IEnumerable<BoardActionLog> logs = await logRepository.GetByBoardAsync(request.BoardId, cancellationToken);
+        IEnumerable<BoardActionLog> logs = await logRepository.GetByBoardAsync(
+            request.BoardId,
+            request.Page,
+            request.PageSize,
+            cancellationToken
+        );
 
-        IEnumerable<GetBoardActionLogsResponse> response = logs.Select(log => new GetBoardActionLogsResponse(
+        IEnumerable<GetBoardActionLogsResponse> responseItems = logs.Select(log => new GetBoardActionLogsResponse(
             log.Id,
             log.UserId,
             log.Details,
             log.Timestamp
         ));
 
-        logger.LogDebug("Fetched {Count} action logs for board {BoardId}", logs.Count(), request.BoardId);
+        var paginatedResponse = new PaginatedList<GetBoardActionLogsResponse>(
+            request.Page,
+            request.PageSize,
+            null,
+            responseItems
+        );
 
-        return Result.Success(response);
+        logger.LogDebug("Fetched {Count} action logs for board {BoardId} (Page {Page})", logs.Count(), request.BoardId, request.Page);
+
+        return Result.Success(paginatedResponse);
     }
 }

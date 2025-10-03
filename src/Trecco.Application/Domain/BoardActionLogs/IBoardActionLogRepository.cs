@@ -3,5 +3,5 @@
 internal interface IBoardActionLogRepository
 {
     Task AddAsync(BoardActionLog log, CancellationToken cancellationToken);
-    Task<IEnumerable<BoardActionLog>> GetByBoardAsync(Guid boardId, CancellationToken cancellationToken);
+    Task<IEnumerable<BoardActionLog>> GetByBoardAsync(Guid boardId, int page, int pageSize, CancellationToken cancellationToken);
 }

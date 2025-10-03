@@ -31,7 +31,7 @@ internal sealed class BoardActionEventHandler
     {
         Guid userId = EnsureUserId();
         string maskedUser = MaskUserId(userId);
-        string logDetails = $"User {maskedUser} moved card '{notification.CardTitle}' to list '{notification.TargetListName}'";
+        string logDetails = $"User {maskedUser} moved card '{notification.CardTitle}' to '{notification.TargetListName}'";
 
         await SaveAndBroadcastAsync(notification.BoardId, userId, logDetails, cancellationToken);
     }
