@@ -1,32 +1,32 @@
 # Trecco - Kanban Board Clone in .NET
 
-**Trecco** is a Trello-inspired Kanban board application built with **.NET 9**, using **Vertical Slice Architecture**, **MongoDB**, **SignalR**, and modern .NET practices.  
+**Trecco** is a Trello-inspired Kanban board application built with **.NET 9**, using **Vertical Slice Architecture**, **MongoDB**, **SignalR**, and modern .NET practices.
 This project demonstrates **clean architecture, feature-based modularization, and real-time collaboration**.
 
 ## Features
 
-- **Boards & Lists**: Create boards and organize them with multiple lists.  
-- **Cards**: Add, edit, move, and delete cards within lists.  
-- **Card Movement**: Drag and drop cards between lists, with automatic position adjustments.  
-- **Real-time Updates**: Uses **SignalR** to propagate board updates instantly to connected clients.  
-- **Error Handling**: FluentResults pattern for consistent and clean error handling.  
-- **Unit & Integration Tests**: Fully tested domain and features.  
+- **Boards & Lists**: Create boards and organize them with multiple lists.
+- **Cards**: Add, edit, move, and delete cards within lists.
+- **Card Movement**: Drag and drop cards between lists, with automatic position adjustments.
+- **Real-time Updates**: Uses **SignalR** to propagate board updates instantly to connected clients.
+- **Error Handling**: Results pattern for consistent and clean error handling.
+- **Unit & Integration Tests**: Fully tested domain and features.
 
 ## Architecture & Technologies
 
-- **Vertical Slice Architecture**: Organizes code by feature (Board, List, Card), making the system modular and maintainable.  
-- **.NET 9 & C#**: Modern, performant backend.  
-- **MongoDB**: NoSQL database for flexible board and card data structures.  
-- **SignalR**: Real-time updates for board collaboration.  
-- **FluentResults**: Standardized result pattern for handling success and failure in features.  
-- **xUnit + Moq**: Unit testing for domain and application layers.  
+- **Vertical Slice Architecture**: Organizes code by feature (Board, List, Card), making the system modular and maintainable.
+- **.NET 9 & C#**: Modern, performant backend.
+- **MongoDB**: NoSQL database for flexible board and card data structures.
+- **SignalR**: Real-time updates for board collaboration.
+- **Results Pattern**: Standardized result pattern for handling success and failure in features.
+- **xUnit + Moq**: Unit testing for domain and application layers.
 
 ## Getting Started
 
 ### Prerequisites
 
-- [.NET 9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0)  
-- [MongoDB](https://www.mongodb.com/) running locally or via Docker  
+- [.NET 9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0)
+- [Docker](https://www.docker.com/) (to run MongoDB)
 
 ### Clone the repository
 
@@ -37,11 +37,13 @@ cd Trecco
 
 ### Run the Application
 
+Make sure Docker is running on your machine before starting the app. Aspire will automatically download and start the required MongoDB container.
+
 ```bash
-dotnet run --project Trecco.Api
+dotnet aspire run --project Trecco.Aspire.AppHost
 ```
 
-The API will start on `http://localhost:5000` (or another configured port).  
+The API will be available at `https://localhost:7035/scalar/v1` once the application has started (or another port if configured).
 
 ## Testing
 
@@ -51,30 +53,25 @@ Run all unit tests:
 dotnet test
 ```
 
-The project includes tests for:  
+The project includes tests for:
 
-- Domain logic (Board, List, Card)  
-- Features (CreateCard, MoveCard, etc.)  
-- Error scenarios and FluentResults handling  
+- Domain logic (Board, List, Card)
+- Features (CreateCard, MoveCard, etc.)
+- Error scenarios and Results handling
 
 ## Real-time Collaboration
 
-Trecco uses **SignalR** for real-time updates. Events include:  
+Trecco uses **SignalR** for real-time updates. Events include:
 
-- `CardCreated`  
-- `CardMoved`  
-- `CardDeleted`  
-- `ListCreated`  
-- `ListRenamed`  
-- `ListDeleted`  
-- `BoardUpdated` (for bulk changes)
+- `CardMoved`
+- `BoardLogged`
 
-This allows multiple users to **see changes instantly** without refreshing the page.  
+This allows multiple users to **see changes instantly** without refreshing the page.
 
 ## Contributing
 
-Contributions are welcome! Open issues or submit pull requests to improve the project.  
+Contributions are welcome! Open issues or submit pull requests to improve the project.
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE.txt).  
+This project is licensed under the [MIT License](LICENSE.txt).

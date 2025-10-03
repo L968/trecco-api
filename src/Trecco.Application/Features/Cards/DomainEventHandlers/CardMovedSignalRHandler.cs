@@ -15,7 +15,7 @@ internal sealed class CardMovedSignalRHandler(
             notification.BoardId, notification.CardId, notification.TargetListId, notification.TargetPosition
         );
 
-        await notifier.CardMovedAsync(
+        await notifier.BroadcastCardMovedAsync(
             notification.BoardId,
             notification.CardId,
             notification.TargetListId,

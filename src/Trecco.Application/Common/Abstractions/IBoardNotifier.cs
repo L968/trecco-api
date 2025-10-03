@@ -2,7 +2,7 @@
 
 public interface IBoardNotifier
 {
-    Task CardMovedAsync(
+    Task BroadcastCardMovedAsync(
         Guid boardId,
         Guid cardId,
         Guid targetListId,
@@ -10,7 +10,7 @@ public interface IBoardNotifier
         CancellationToken cancellationToken
     );
 
-    Task BroadcastBoardLogAsync(
+    Task BroadcastBoardLoggedAsync(
         Guid boardId,
         Guid logId,
         Guid userId,

@@ -69,7 +69,7 @@ internal sealed class BoardActionEventHandler(
 
         await boardLogRepository.AddAsync(log, cancellationToken);
 
-        await boardNotifier.BroadcastBoardLogAsync(
+        await boardNotifier.BroadcastBoardLoggedAsync(
             boardId,
             log.Id,
             log.UserId,
