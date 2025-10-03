@@ -64,6 +64,7 @@ public sealed class Board : Entity
         {
             _memberIds.Add(userId);
             UpdatedAt = DateTime.UtcNow;
+            AddDomainEvent(new MemberAddedDomainEvent(Id, userId));
         }
     }
 
