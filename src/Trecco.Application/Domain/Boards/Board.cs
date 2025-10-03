@@ -122,6 +122,7 @@ public sealed class Board : Entity
         {
             _lists.Remove(list);
             UpdatedAt = DateTime.UtcNow;
+            AddDomainEvent(new ListDeletedDomainEvent(Id, list.Id, list.Name));
         }
     }
 

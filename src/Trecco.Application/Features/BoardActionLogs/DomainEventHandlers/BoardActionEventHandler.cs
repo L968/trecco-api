@@ -9,7 +9,8 @@ namespace Trecco.Application.Features.BoardActionLogs.DomainEventHandlers;
 
 internal sealed class BoardActionEventHandler
     : INotificationHandler<CardMovedDomainEvent>,
-      INotificationHandler<ListAddedDomainEvent>
+      INotificationHandler<ListAddedDomainEvent>,
+      INotificationHandler<ListDeletedDomainEvent>
 {
     private readonly IBoardActionLogRepository _boardLogRepository;
     private readonly IHubContext<BoardHub> _hubContext;
@@ -43,14 +44,13 @@ internal sealed class BoardActionEventHandler
         await SaveAndBroadcastAsync(notification.BoardId, userId, logDetails, cancellationToken);
     }
 
-    private Guid EnsureUserId()
+    public async Task Handle(ListDeletedDomainEvent notification, CancellationToken cancellationToken)
     {
-        if (_userContext.UserId is null || _userContext.UserId == Guid.Empty)
-        {
-            throw new InvalidOperationException("Cannot log board action: UserId not available in context.");
-        }
+        Guid userId = EnsureUserId();
+        string maskedUser = MaskUserId(userId);
+        string logDetails = $"User {maskedUser} deleted list '{notification.ListName}'";
 
-        return _userContext.UserId.Value;
+        await SaveAndBroadcastAsync(notification.BoardId, userId, logDetails, cancellationToken);
     }
 
     private async Task SaveAndBroadcastAsync(Guid boardId, Guid userId, string details, CancellationToken cancellationToken)
@@ -68,6 +68,16 @@ internal sealed class BoardActionEventHandler
                 log.Timestamp,
                 cancellationToken
             );
+    }
+
+    private Guid EnsureUserId()
+    {
+        if (_userContext.UserId is null || _userContext.UserId == Guid.Empty)
+        {
+            throw new InvalidOperationException("Cannot log board action: UserId not available in context.");
+        }
+
+        return _userContext.UserId.Value;
     }
 
     private static string MaskUserId(Guid userId)
