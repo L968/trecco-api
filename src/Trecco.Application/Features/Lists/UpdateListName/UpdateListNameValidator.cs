@@ -1,10 +1,13 @@
-﻿namespace Trecco.Application.Features.Lists.CreateList;
+﻿namespace Trecco.Application.Features.Lists.UpdateListName;
 
-internal sealed class CreateListValidator : AbstractValidator<CreateListCommand>
+internal sealed class UpdateListNameValidator : AbstractValidator<UpdateListNameCommand>
 {
-    public CreateListValidator()
+    public UpdateListNameValidator()
     {
         RuleFor(l => l.BoardId)
+            .NotEmpty();
+
+        RuleFor(l => l.ListId)
             .NotEmpty();
 
         RuleFor(l => l.Name)

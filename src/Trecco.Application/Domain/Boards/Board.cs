@@ -114,6 +114,22 @@ public sealed class Board : Entity
         return newList;
     }
 
+    public Result RenameList(Guid listId, string newName)
+    {
+        List? list = _lists.FirstOrDefault(l => l.Id == listId);
+        if (list is null)
+        {
+            return Result.Failure(ListErrors.NotFound(listId));
+        }
+
+        string oldName = list.Name;
+        list.UpdateName(newName);
+        UpdatedAt = DateTime.UtcNow;
+        AddDomainEvent(new ListRenamedDomainEvent(Id, list.Id, oldName, newName));
+
+        return Result.Success();
+    }
+
     public void RemoveList(Guid listId)
     {
         List? list = _lists.FirstOrDefault(l => l.Id == listId);

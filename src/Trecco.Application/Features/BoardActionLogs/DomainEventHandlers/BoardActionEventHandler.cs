@@ -10,6 +10,7 @@ namespace Trecco.Application.Features.BoardActionLogs.DomainEventHandlers;
 internal sealed class BoardActionEventHandler
     : INotificationHandler<CardMovedDomainEvent>,
       INotificationHandler<ListAddedDomainEvent>,
+      INotificationHandler<ListRenamedDomainEvent>,
       INotificationHandler<ListDeletedDomainEvent>
 {
     private readonly IBoardActionLogRepository _boardLogRepository;
@@ -40,6 +41,15 @@ internal sealed class BoardActionEventHandler
         Guid userId = EnsureUserId();
         string maskedUser = MaskUserId(userId);
         string logDetails = $"User {maskedUser} added a new list '{notification.ListName}'";
+
+        await SaveAndBroadcastAsync(notification.BoardId, userId, logDetails, cancellationToken);
+    }
+
+    public async Task Handle(ListRenamedDomainEvent notification, CancellationToken cancellationToken)
+    {
+        Guid userId = EnsureUserId();
+        string maskedUser = MaskUserId(userId);
+        string logDetails = $"User {maskedUser} renamed list '{notification.OldName}' to '{notification.NewName}'";
 
         await SaveAndBroadcastAsync(notification.BoardId, userId, logDetails, cancellationToken);
     }
