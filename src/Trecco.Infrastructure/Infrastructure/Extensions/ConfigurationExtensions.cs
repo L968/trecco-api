@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 
-namespace Trecco.Application.Infrastructure.Extensions;
+namespace Trecco.Infrastructure.Infrastructure.Extensions;
 
 public static class ConfigurationExtensions
 {

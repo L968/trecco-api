@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Logging;
+using Trecco.Domain.Boards;
 
-namespace Trecco.Application.Infrastructure.Hubs;
+namespace Trecco.Infrastructure.Infrastructure.Hubs;
 
 public class BoardHub : Hub
 {

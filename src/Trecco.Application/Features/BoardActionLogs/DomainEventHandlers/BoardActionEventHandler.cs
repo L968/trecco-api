@@ -1,33 +1,22 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using Trecco.Application.Common.Abstractions;
 using Trecco.Application.Common.Authentication;
-using Trecco.Application.Infrastructure.Hubs;
 using Trecco.Domain.BoardActionLogs;
 using Trecco.Domain.Cards;
 using Trecco.Domain.Lists;
 
 namespace Trecco.Application.Features.BoardActionLogs.DomainEventHandlers;
 
-internal sealed class BoardActionEventHandler
-    : INotificationHandler<CardMovedDomainEvent>,
-      INotificationHandler<MemberAddedDomainEvent>,
-      INotificationHandler<ListAddedDomainEvent>,
-      INotificationHandler<ListRenamedDomainEvent>,
-      INotificationHandler<ListDeletedDomainEvent>
+internal sealed class BoardActionEventHandler(
+    IUserContext userContext,
+    IBoardNotifier boardNotifier,
+    IBoardActionLogRepository boardLogRepository
+) :
+    INotificationHandler<CardMovedDomainEvent>,
+    INotificationHandler<MemberAddedDomainEvent>,
+    INotificationHandler<ListAddedDomainEvent>,
+    INotificationHandler<ListRenamedDomainEvent>,
+    INotificationHandler<ListDeletedDomainEvent>
 {
-    private readonly IBoardActionLogRepository _boardLogRepository;
-    private readonly IHubContext<BoardHub> _hubContext;
-    private readonly IUserContext _userContext;
-
-    public BoardActionEventHandler(
-        IBoardActionLogRepository logRepository,
-        IHubContext<BoardHub> hubContext,
-        IUserContext userContext)
-    {
-        _boardLogRepository = logRepository;
-        _hubContext = hubContext;
-        _userContext = userContext;
-    }
-
     public async Task Handle(CardMovedDomainEvent notification, CancellationToken cancellationToken)
     {
         Guid userId = EnsureUserId();
@@ -78,27 +67,26 @@ internal sealed class BoardActionEventHandler
     {
         var log = new BoardActionLog(boardId, userId, details);
 
-        await _boardLogRepository.AddAsync(log, cancellationToken);
+        await boardLogRepository.AddAsync(log, cancellationToken);
 
-        await _hubContext.Clients
-            .Group(boardId.ToString())
-            .SendAsync("BoardLogged",
-                log.Id,
-                log.UserId,
-                log.Details,
-                log.Timestamp,
-                cancellationToken
-            );
+        await boardNotifier.BroadcastBoardLogAsync(
+            boardId,
+            log.Id,
+            log.UserId,
+            log.Details,
+            log.Timestamp,
+            cancellationToken
+        );
     }
 
     private Guid EnsureUserId()
     {
-        if (_userContext.UserId is null || _userContext.UserId == Guid.Empty)
+        if (userContext.UserId is null || userContext.UserId == Guid.Empty)
         {
             throw new InvalidOperationException("Cannot log board action: UserId not available in context.");
         }
 
-        return _userContext.UserId.Value;
+        return userContext.UserId.Value;
     }
 
     private static string MaskUserId(Guid userId)

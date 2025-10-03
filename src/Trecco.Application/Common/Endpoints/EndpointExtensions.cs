@@ -6,7 +6,7 @@ namespace Trecco.Application.Common.Endpoints;
 
 public static class EndpointExtensions
 {
-    internal static IServiceCollection AddEndpoints(this IServiceCollection services, params Assembly[] assemblies)
+    public static IServiceCollection AddEndpoints(this IServiceCollection services, params Assembly[] assemblies)
     {
         ServiceDescriptor[] serviceDescriptors = assemblies
             .SelectMany(a => a.GetTypes())

@@ -1,4 +1,4 @@
-using Trecco.Application.Infrastructure;
+using Trecco.Infrastructure.Infrastructure;
 
 IDistributedApplicationBuilder builder = DistributedApplication.CreateBuilder(args);
 

@@ -1,6 +1,7 @@
 ﻿using MongoDB.Driver;
+using Trecco.Domain.Boards;
 
-namespace Trecco.Application.Infrastructure.Repositories;
+namespace Trecco.Infrastructure.Infrastructure.Repositories;
 
 internal sealed class BoardRepository : IBoardRepository
 {

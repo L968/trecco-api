@@ -1,4 +1,4 @@
-﻿namespace Trecco.Application.Infrastructure;
+﻿namespace Trecco.Infrastructure.Infrastructure;
 
 public static class ServiceNames
 {

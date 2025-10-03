@@ -31,6 +31,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Trecco.ArchitectureTests", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Trecco.Domain", "src\Trecco.Domain\Trecco.Domain.csproj", "{95844CD7-B551-4060-AF63-B7E93DACD7E2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Trecco.Infrastructure", "src\Trecco.Infrastructure\Trecco.Infrastructure.csproj", "{95C49127-D2A6-44A4-B1C5-6F10D218456A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -65,6 +67,10 @@ Global
 		{95844CD7-B551-4060-AF63-B7E93DACD7E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{95844CD7-B551-4060-AF63-B7E93DACD7E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{95844CD7-B551-4060-AF63-B7E93DACD7E2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{95C49127-D2A6-44A4-B1C5-6F10D218456A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{95C49127-D2A6-44A4-B1C5-6F10D218456A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{95C49127-D2A6-44A4-B1C5-6F10D218456A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{95C49127-D2A6-44A4-B1C5-6F10D218456A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -77,6 +83,7 @@ Global
 		{AB959874-52EC-48E5-A1C1-6EC6D6AAC35E} = {1F81BD05-46BA-4053-A716-107129364218}
 		{3F172012-3475-5B62-A273-A35D2D61E20A} = {73C7F6B0-3C0F-4529-B8A3-EF806F809F78}
 		{95844CD7-B551-4060-AF63-B7E93DACD7E2} = {1F81BD05-46BA-4053-A716-107129364218}
+		{95C49127-D2A6-44A4-B1C5-6F10D218456A} = {1F81BD05-46BA-4053-A716-107129364218}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FD382CF2-FC23-45BC-8B69-28D7E62F5A4A}

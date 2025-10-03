@@ -1,35 +1,26 @@
-﻿using Microsoft.AspNetCore.SignalR;
-using Trecco.Application.Infrastructure.Hubs;
+﻿using Trecco.Application.Common.Abstractions;
 using Trecco.Domain.Cards;
 
 namespace Trecco.Application.Features.Cards.DomainEventHandlers;
 
-internal sealed class CardMovedSignalRHandler : INotificationHandler<CardMovedDomainEvent>
+internal sealed class CardMovedSignalRHandler(
+    IBoardNotifier notifier,
+    ILogger<CardMovedSignalRHandler> logger
+    ) : INotificationHandler<CardMovedDomainEvent>
 {
-    private readonly IHubContext<BoardHub> _hubContext;
-    private readonly ILogger<CardMovedSignalRHandler> _logger;
-
-    public CardMovedSignalRHandler(IHubContext<BoardHub> hubContext, ILogger<CardMovedSignalRHandler> logger)
-    {
-        _hubContext = hubContext;
-        _logger = logger;
-    }
-
     public async Task Handle(CardMovedDomainEvent notification, CancellationToken cancellationToken)
     {
-        _logger.LogDebug(
+        logger.LogDebug(
             "DomainEvent: Sending SignalR notification to the board group {BoardId}. Card {CardId} moved to list {TargetListId} at position {TargetPosition}.",
             notification.BoardId, notification.CardId, notification.TargetListId, notification.TargetPosition
         );
 
-        await _hubContext.Clients
-            .Group(notification.BoardId.ToString())
-            .SendAsync(
-                "CardMoved",
-                notification.CardId,
-                notification.TargetListId,
-                notification.TargetPosition,
-                cancellationToken
-            );
+        await notifier.CardMovedAsync(
+            notification.BoardId,
+            notification.CardId,
+            notification.TargetListId,
+            notification.TargetPosition,
+            cancellationToken
+        );
     }
 }

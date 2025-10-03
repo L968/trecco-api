@@ -3,8 +3,9 @@ using Trecco.Api.Extensions;
 using Trecco.Api.Middleware;
 using Trecco.Application;
 using Trecco.Application.Common.Endpoints;
-using Trecco.Application.Infrastructure.Hubs;
 using Trecco.Aspire.ServiceDefaults;
+using Trecco.Infrastructure;
+using Trecco.Infrastructure.Infrastructure.Hubs;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 

@@ -1,7 +1,7 @@
 ﻿using MongoDB.Driver;
 using Trecco.Domain.BoardActionLogs;
 
-namespace Trecco.Application.Infrastructure.Repositories;
+namespace Trecco.Infrastructure.Infrastructure.Repositories;
 
 internal sealed class BoardActionLogRepository : IBoardActionLogRepository
 {

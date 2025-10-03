@@ -14,7 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\src\Trecco.Api\Trecco.Api.csproj" />
-    <ProjectReference Include="..\..\..\src\Trecco.Application\Trecco.Application.csproj" IsAspireProjectResource="false" />
+    <ProjectReference Include="..\..\..\src\Trecco.Infrastructure\Trecco.Infrastructure.csproj" IsAspireProjectResource="false" />
   </ItemGroup>
 
 </Project>
